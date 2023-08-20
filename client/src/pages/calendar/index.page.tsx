@@ -1,5 +1,7 @@
 import { ActionIcon } from '@mantine/core';
 import { TimeInput } from '@mantine/dates';
+import { TextField } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
 import { IconClock } from '@tabler/icons-react';
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './ShiftBoard.module.css';
@@ -194,6 +196,13 @@ const ShiftBoard: React.FC = () => {
             }
             maw={400}
             mx="auto"
+          />
+          <Autocomplete
+            id="disabled-options-demo"
+            options={timeSlots}
+            getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
+            sx={{ width: 300 }}
+            renderInput={(params) => <TextField {...params} label="バイト開始時間" />}
           />
         </div>
       </div>
