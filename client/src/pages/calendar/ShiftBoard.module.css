@@ -202,3 +202,16 @@
   outline: none;
   box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
 }
+
+.autocompleteContainer {
+  width: 100%;
+  max-width: 300px; /* or any desired width */
+  display: flex;
+  justify-content: center;
+}
+
+.closeButtonContainer {
+  position: absolute; /* 絶対位置指定 */
+  top: 10px; /* 上からの位置を指定 */
+  left: 10px; /* 左からの位置を指定 */
+}
