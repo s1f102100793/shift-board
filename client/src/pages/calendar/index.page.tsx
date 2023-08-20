@@ -113,7 +113,6 @@ const ShiftBoard: React.FC = () => {
             return (
               <div
                 key={index}
-                onClick={() => setShowShiftBar(true)}
                 className={`${styles.calendarDay} 
                           ${
                             day === today.day &&
@@ -132,9 +131,10 @@ const ShiftBoard: React.FC = () => {
           })}
         </div>
       </div>
-
-      {/* Lower Half: Shift Input */}
       <div className={styles.shiftInputSection}>
+        <button className={styles.addButton} onClick={() => setShowShiftBar(true)}>
+          ＋シフトを追加
+        </button>
         <div className={`${styles.shiftBar} ${showShiftBar ? styles.shiftBarVisible : ''}`}>
           <button onClick={() => setShowShiftBar(false)}>閉じる</button>
           <button
