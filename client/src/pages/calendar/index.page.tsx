@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import styles from './ShiftBoard.module.css';
 
@@ -33,6 +34,7 @@ const ShiftBoard: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [calendarData, setCalendarData] = useState<(number | null)[]>([]);
+  const [holidays, setHolidays] = useState<number[]>([]);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -50,6 +52,37 @@ const ShiftBoard: React.FC = () => {
 
     setCalendarData(data);
   }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    // 日本の祝日データを取得
+    const fetchHolidays = async () => {
+      try {
+        const response = await axios.get(
+          `https://date.nager.at/Api/v2/PublicHoliday/${selectedYear}/JP`
+        );
+        const holidaysOfMonth = response.data
+          .filter(
+            (holiday: { date: string }) => new Date(holiday.date).getMonth() === selectedMonth
+          )
+          .map((holiday: { date: string }) => new Date(holiday.date).getDate());
+
+        setHolidays(holidaysOfMonth);
+      } catch (error) {
+        console.error('Failed to fetch holidays:', error);
+      }
+    };
+
+    fetchHolidays();
+  }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    fetch('https://holidays-jp.github.io/api/v1/date.json')
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data); // こちらを追加
+        // 応答データから祝日の日付のみを取得してstateにセットするロジック
+      });
+  }, [selectedMonth]);
 
   const navigateMonth = (offset: number) => {
     let newMonth = selectedMonth + offset;
@@ -102,6 +135,7 @@ const ShiftBoard: React.FC = () => {
                     } 
                     ${index % 7 === 0 ? styles.sunday : ''} 
                     ${index % 7 === 6 ? styles.saturday : ''}
+                    ${day !== null && holidays.includes(day) ? styles.holiday : ''} 
                     `}
             >
               {day}

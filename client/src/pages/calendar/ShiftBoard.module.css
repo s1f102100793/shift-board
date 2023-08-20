@@ -99,3 +99,7 @@
 .saturday {
   color: blue; /* 土曜日の色 */
 }
+
+.holiday {
+  background-color: #ffd700; /* お好みの色に変更できます */
+}
