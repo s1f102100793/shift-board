@@ -43,5 +43,9 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "antd": "^5.8.4",
+    "react-dom": "^18.2.0"
   }
 }
