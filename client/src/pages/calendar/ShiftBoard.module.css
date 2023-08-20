@@ -76,3 +76,26 @@
   background-color: rgba(0, 123, 255, 0.2);
   transform: scale(1.1);
 }
+
+.daysOfWeek {
+  display: flex;
+}
+
+.dayLabel {
+  flex: 1;
+  text-align: center;
+  padding: 5px;
+  background-color: #eee;
+}
+
+.today {
+  background-color: #ffdd57; /* 今日の日付の背景色 */
+}
+
+.sunday {
+  color: red; /* 日曜日の色 */
+}
+
+.saturday {
+  color: blue; /* 土曜日の色 */
+}

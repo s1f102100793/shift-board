@@ -24,8 +24,12 @@ function getFirstDayOfMonth(month: number, year: number) {
   return new Date(year, month, 1).getDay();
 }
 
+const DAYS_OF_WEEK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 const ShiftBoard: React.FC = () => {
   const now = new Date();
+  const today = { day: now.getDate(), month: now.getMonth(), year: now.getFullYear() };
+
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [calendarData, setCalendarData] = useState<(number | null)[]>([]);
@@ -78,9 +82,28 @@ const ShiftBoard: React.FC = () => {
             ＞
           </button>
         </div>
+
         <div className={styles.calendarGrid}>
+          {DAYS_OF_WEEK.map((day) => (
+            <div key={day} className={`${styles.calendarDay} ${styles.dayLabel}`}>
+              {day}
+            </div>
+          ))}
           {calendarData.map((day, index) => (
-            <div key={index} className={styles.calendarDay}>
+            <div
+              key={index}
+              className={`${styles.calendarDay} 
+                    ${
+                      day === today.day &&
+                      selectedMonth === today.month &&
+                      selectedYear === today.year
+                        ? styles.today
+                        : ''
+                    } 
+                    ${index % 7 === 0 ? styles.sunday : ''} 
+                    ${index % 7 === 6 ? styles.saturday : ''}
+                    `}
+            >
               {day}
             </div>
           ))}
