@@ -33,6 +33,8 @@ const ShiftBoard: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [calendarData, setCalendarData] = useState<(number | null)[]>([]);
+  const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
+  const [showShiftBar, setShowShiftBar] = useState(false);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -50,6 +52,17 @@ const ShiftBoard: React.FC = () => {
 
     setCalendarData(data);
   }, [selectedMonth, selectedYear]);
+
+  useEffect(() => {
+    fetch('https://holidays-jp.github.io/api/v1/date.json')
+      .then((res) => res.json())
+      .then((data) => {
+        setHolidays(data);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch holidays:', error);
+      });
+  }, []);
 
   const navigateMonth = (offset: number) => {
     let newMonth = selectedMonth + offset;
@@ -89,29 +102,50 @@ const ShiftBoard: React.FC = () => {
               {day}
             </div>
           ))}
-          {calendarData.map((day, index) => (
-            <div
-              key={index}
-              className={`${styles.calendarDay} 
-                    ${
-                      day === today.day &&
-                      selectedMonth === today.month &&
-                      selectedYear === today.year
-                        ? styles.today
-                        : ''
-                    } 
-                    ${index % 7 === 0 ? styles.sunday : ''} 
-                    ${index % 7 === 6 ? styles.saturday : ''}
-                    `}
-            >
-              {day}
-            </div>
-          ))}
+          {calendarData.map((day, index) => {
+            let dateStr = '';
+            if (day !== null) {
+              dateStr = `${selectedYear}-${(selectedMonth + 1).toString().padStart(2, '0')}-${day
+                .toString()
+                .padStart(2, '0')}`;
+            }
+            const isHoliday = holidays[dateStr];
+            return (
+              <div
+                key={index}
+                onClick={() => setShowShiftBar(true)}
+                className={`${styles.calendarDay} 
+                          ${
+                            day === today.day &&
+                            selectedMonth === today.month &&
+                            selectedYear === today.year
+                              ? styles.today
+                              : ''
+                          } 
+                          ${index % 7 === 0 || isHoliday ? styles.sunday : ''} 
+                          ${index % 7 === 6 ? styles.saturday : ''} 
+                          `}
+              >
+                {day}
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* Lower Half: Shift Input */}
-      <div className={styles.shiftInputSection}>{/* ... (the rest remains unchanged) */}</div>
+      <div className={styles.shiftInputSection}>
+        <div className={`${styles.shiftBar} ${showShiftBar ? styles.shiftBarVisible : ''}`}>
+          <button onClick={() => setShowShiftBar(false)}>閉じる</button>
+          <button
+            onClick={() => {
+              /* シフトの詳細入力処理 */
+            }}
+          >
+            シフトを追加する
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
