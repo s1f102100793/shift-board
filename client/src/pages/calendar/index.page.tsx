@@ -34,7 +34,7 @@ const ShiftBoard: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [calendarData, setCalendarData] = useState<(number | null)[]>([]);
-  const [holidays, setHolidays] = useState<number[]>([]);
+  const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -79,10 +79,12 @@ const ShiftBoard: React.FC = () => {
     fetch('https://holidays-jp.github.io/api/v1/date.json')
       .then((res) => res.json())
       .then((data) => {
-        console.log(data); // こちらを追加
-        // 応答データから祝日の日付のみを取得してstateにセットするロジック
+        setHolidays(data);
+      })
+      .catch((error) => {
+        console.error('Failed to fetch holidays:', error);
       });
-  }, [selectedMonth]);
+  }, []);
 
   const navigateMonth = (offset: number) => {
     let newMonth = selectedMonth + offset;
@@ -122,25 +124,33 @@ const ShiftBoard: React.FC = () => {
               {day}
             </div>
           ))}
-          {calendarData.map((day, index) => (
-            <div
-              key={index}
-              className={`${styles.calendarDay} 
-                    ${
-                      day === today.day &&
-                      selectedMonth === today.month &&
-                      selectedYear === today.year
-                        ? styles.today
-                        : ''
-                    } 
-                    ${index % 7 === 0 ? styles.sunday : ''} 
-                    ${index % 7 === 6 ? styles.saturday : ''}
-                    ${day !== null && holidays.includes(day) ? styles.holiday : ''} 
-                    `}
-            >
-              {day}
-            </div>
-          ))}
+          {calendarData.map((day, index) => {
+            let dateStr = '';
+            if (day !== null) {
+              dateStr = `${selectedYear}-${(selectedMonth + 1).toString().padStart(2, '0')}-${day
+                .toString()
+                .padStart(2, '0')}`;
+            }
+            const isHoliday = holidays[dateStr];
+            return (
+              <div
+                key={index}
+                className={`${styles.calendarDay} 
+                          ${
+                            day === today.day &&
+                            selectedMonth === today.month &&
+                            selectedYear === today.year
+                              ? styles.today
+                              : ''
+                          } 
+                          ${index % 7 === 0 || isHoliday ? styles.sunday : ''} 
+                          ${index % 7 === 6 ? styles.saturday : ''} 
+                          `}
+              >
+                {day}
+              </div>
+            );
+          })}
         </div>
       </div>
 
