@@ -93,6 +93,15 @@
   background-color: #ffdd57; /* 今日の日付の背景色 */
 }
 
+.selectedDay {
+  background-color: rgba(
+    100,
+    149,
+    237,
+    0.6
+  ); /* この色はCornflowerBlueの透明度を60%にしたものです */
+}
+
 .sunday {
   color: red; /* 日曜日の色 */
 }
@@ -133,4 +142,16 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.selectedDaysSection {
+  position: absolute;
+  top: 8px; /* 上部からの距離を少し小さく */
+  left: 8px; /* 左側からの距離を少し小さく */
+  background-color: #f5f5f5;
+  padding: 4px 6px; /* パディングを少し小さく */
+  border-radius: 3px; /* 角の丸みを少し小さく */
+  font-size: 12px; /* フォントサイズを小さく */
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1); /* 影を少し薄く */
+  z-index: 1;
 }
