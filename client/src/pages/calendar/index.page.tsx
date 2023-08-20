@@ -39,7 +39,8 @@ const ShiftBoard: React.FC = () => {
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
   const [showShiftBar, setShowShiftBar] = useState(false);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
-  const ref = useRef<HTMLInputElement>(null);
+  const startTimeRef = useRef<HTMLInputElement>(null);
+  const endTimeRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -172,10 +173,10 @@ const ShiftBoard: React.FC = () => {
           <button onClick={() => setShowShiftBar(false)}>閉じる</button>
           <TimeInput
             label="バイトの希望開始時刻"
-            ref={ref}
+            ref={startTimeRef}
             step={1800} // 30分おきの選択
             rightSection={
-              <ActionIcon onClick={() => ref.current && ref.current.showPicker()}>
+              <ActionIcon onClick={() => startTimeRef.current && startTimeRef.current.showPicker()}>
                 <IconClock size="1rem" stroke={1.5} />
               </ActionIcon>
             }
@@ -184,10 +185,10 @@ const ShiftBoard: React.FC = () => {
           />
           <TimeInput
             label="バイトの希望終了時刻"
-            ref={ref}
+            ref={endTimeRef}
             step={1800} // 30分おきの選択
             rightSection={
-              <ActionIcon onClick={() => ref.current && ref.current.showPicker()}>
+              <ActionIcon onClick={() => endTimeRef.current && endTimeRef.current.showPicker()}>
                 <IconClock size="1rem" stroke={1.5} />
               </ActionIcon>
             }
