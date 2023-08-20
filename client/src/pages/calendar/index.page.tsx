@@ -35,9 +35,11 @@ const ShiftBoard: React.FC = () => {
   const [calendarData, setCalendarData] = useState<(number | null)[]>([]);
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
   const [showShiftBar, setShowShiftBar] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<number[]>([]);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
+
     const firstDayOfMonth = getFirstDayOfMonth(selectedMonth, selectedYear);
 
     const data = [];
@@ -80,6 +82,12 @@ const ShiftBoard: React.FC = () => {
     setSelectedYear(newYear);
   };
 
+  const handleDayClick = (day: number) => {
+    setSelectedDays((prevDays) =>
+      prevDays.includes(day) ? prevDays.filter((d) => d !== day) : [...prevDays, day]
+    );
+  };
+
   return (
     <div className={styles.container}>
       {/* Upper Half: Calendar */}
@@ -113,18 +121,21 @@ const ShiftBoard: React.FC = () => {
             return (
               <div
                 key={index}
-                onClick={() => setShowShiftBar(true)}
                 className={`${styles.calendarDay} 
-                          ${
-                            day === today.day &&
-                            selectedMonth === today.month &&
-                            selectedYear === today.year
-                              ? styles.today
-                              : ''
-                          } 
-                          ${index % 7 === 0 || isHoliday ? styles.sunday : ''} 
-                          ${index % 7 === 6 ? styles.saturday : ''} 
-                          `}
+                ${
+                  day === today.day && selectedMonth === today.month && selectedYear === today.year
+                    ? styles.today
+                    : ''
+                } 
+                ${index % 7 === 0 || isHoliday ? styles.sunday : ''} 
+                ${index % 7 === 6 ? styles.saturday : ''} 
+                ${day !== null && selectedDays.includes(day) ? styles.selectedDay : ''} 
+                `}
+                onClick={() => {
+                  if (day !== null) {
+                    handleDayClick(day);
+                  }
+                }}
               >
                 {day}
               </div>
@@ -132,9 +143,13 @@ const ShiftBoard: React.FC = () => {
           })}
         </div>
       </div>
-
-      {/* Lower Half: Shift Input */}
       <div className={styles.shiftInputSection}>
+        <div className={styles.selectedDaysSection}>
+          選択された日： {selectedDays.map((day) => `${MONTHS[selectedMonth]} ${day}`).join(', ')}
+        </div>
+        <button className={styles.addButton} onClick={() => setShowShiftBar(true)}>
+          ＋シフトを追加
+        </button>
         <div className={`${styles.shiftBar} ${showShiftBar ? styles.shiftBarVisible : ''}`}>
           <button onClick={() => setShowShiftBar(false)}>閉じる</button>
           <button
