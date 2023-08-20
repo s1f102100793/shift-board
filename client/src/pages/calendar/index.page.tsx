@@ -187,7 +187,7 @@ const ShiftBoard: React.FC = () => {
               id="disabled-options-demo"
               options={timeSlots}
               getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
-              sx={{ width: 300}}
+              sx={{ width: 300 }}
               renderInput={(params) => <TextField {...params} label="バイト終了時間" />}
             />
           </div>
