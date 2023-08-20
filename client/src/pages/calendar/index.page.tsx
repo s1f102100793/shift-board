@@ -39,6 +39,7 @@ const ShiftBoard: React.FC = () => {
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
+
     const firstDayOfMonth = getFirstDayOfMonth(selectedMonth, selectedYear);
 
     const data = [];
