@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import styles from './ShiftBoard.module.css';
 
@@ -35,6 +34,7 @@ const ShiftBoard: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [calendarData, setCalendarData] = useState<(number | null)[]>([]);
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
+  const [showShiftBar, setShowShiftBar] = useState(false);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -51,28 +51,6 @@ const ShiftBoard: React.FC = () => {
     }
 
     setCalendarData(data);
-  }, [selectedMonth, selectedYear]);
-
-  useEffect(() => {
-    // 日本の祝日データを取得
-    const fetchHolidays = async () => {
-      try {
-        const response = await axios.get(
-          `https://date.nager.at/Api/v2/PublicHoliday/${selectedYear}/JP`
-        );
-        const holidaysOfMonth = response.data
-          .filter(
-            (holiday: { date: string }) => new Date(holiday.date).getMonth() === selectedMonth
-          )
-          .map((holiday: { date: string }) => new Date(holiday.date).getDate());
-
-        setHolidays(holidaysOfMonth);
-      } catch (error) {
-        console.error('Failed to fetch holidays:', error);
-      }
-    };
-
-    fetchHolidays();
   }, [selectedMonth, selectedYear]);
 
   useEffect(() => {
@@ -135,6 +113,7 @@ const ShiftBoard: React.FC = () => {
             return (
               <div
                 key={index}
+                onClick={() => setShowShiftBar(true)}
                 className={`${styles.calendarDay} 
                           ${
                             day === today.day &&
@@ -155,7 +134,18 @@ const ShiftBoard: React.FC = () => {
       </div>
 
       {/* Lower Half: Shift Input */}
-      <div className={styles.shiftInputSection}>{/* ... (the rest remains unchanged) */}</div>
+      <div className={styles.shiftInputSection}>
+        <div className={`${styles.shiftBar} ${showShiftBar ? styles.shiftBarVisible : ''}`}>
+          <button onClick={() => setShowShiftBar(false)}>閉じる</button>
+          <button
+            onClick={() => {
+              /* シフトの詳細入力処理 */
+            }}
+          >
+            シフトを追加する
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
