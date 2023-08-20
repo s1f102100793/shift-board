@@ -170,15 +170,8 @@ const ShiftBoard: React.FC = () => {
         </button>
         <div className={`${styles.shiftBar} ${showShiftBar ? styles.shiftBarVisible : ''}`}>
           <button onClick={() => setShowShiftBar(false)}>閉じる</button>
-          {/* <Autocomplete
-            id="disabled-options-demo"
-            options={timeSlots}
-            getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="バイト開始時間" />}
-          /> */}
           <TimeInput
-            label="Click icon to show browser picker"
+            label="バイトの希望開始時刻"
             ref={ref}
             step={1800} // 30分おきの選択
             rightSection={
@@ -189,36 +182,18 @@ const ShiftBoard: React.FC = () => {
             maw={400}
             mx="auto"
           />
-
-          <label>
-            開始時間:
-            <input type="time" id="start-time" />
-          </label>
-          <label>
-            終了時間:
-            <input type="time" id="end-time" />
-          </label>
-
-          <button
-            onClick={() => {
-              const startTimeElement = document.getElementById('start-time') as HTMLInputElement;
-              const endTimeElement = document.getElementById('end-time') as HTMLInputElement;
-
-              const startTime = startTimeElement !== null ? startTimeElement.value : '';
-              const endTime = endTimeElement !== null ? endTimeElement.value : '';
-
-              if (startTime && endTime) {
-                // ここでシフトの時間設定に関連する処理を行います。
-                console.log(`シフト開始時間: ${startTime}, シフト終了時間: ${endTime}`);
-
-                // 例: APIにシフト時間を送信する、シフト時間を画面に表示するなど
-              } else {
-                alert('開始時間と終了時間の両方を入力してください。');
-              }
-            }}
-          >
-            シフトを追加する
-          </button>
+          <TimeInput
+            label="バイトの希望終了時刻"
+            ref={ref}
+            step={1800} // 30分おきの選択
+            rightSection={
+              <ActionIcon onClick={() => ref.current && ref.current.showPicker()}>
+                <IconClock size="1rem" stroke={1.5} />
+              </ActionIcon>
+            }
+            maw={400}
+            mx="auto"
+          />
         </div>
       </div>
     </div>

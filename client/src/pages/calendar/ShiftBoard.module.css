@@ -170,5 +170,29 @@
 }
 
 .clearButton {
-  /* 任意のスタイル (例: マージン、パディング、ボーダー、背景色など) */
+  display: inline-block;
+  padding: 5px 10px; /* サイズを小さくするためにパディングを減少 */
+  font-size: 14px; /* テキストのサイズを小さくする */
+  background-color: rgba(0, 123, 255, 0.7); /* 透明度を上げるための背景色 */
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: relative;
+  left: -10px; /* ボタンを少し左に移動 */
+  bottom: -10px; /* ボタンを少し下に移動 */
+}
+
+.clearButton:hover {
+  background-color: rgba(0, 86, 179, 0.7); /* 透明度を上げるためのホバー背景色 */
+}
+
+.clearButton:active {
+  background-color: rgba(0, 68, 153, 0.7); /* 透明度を上げるためのアクティブ背景色 */
+}
+
+.clearButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
 }
