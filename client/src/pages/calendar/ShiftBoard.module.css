@@ -224,3 +224,7 @@
 .autocompleteContainer > :first-child {
   margin-right: 20px; /* これを追加：最初のコンポーネントの右側にスペースを追加 */
 }
+
+.timespace {
+  padding-top: 30px;
+}

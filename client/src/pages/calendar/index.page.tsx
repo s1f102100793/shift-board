@@ -176,20 +176,24 @@ const ShiftBoard: React.FC = () => {
             <button onClick={() => setShowShiftBar(false)}>閉じる</button>
           </div>
           <div className="autocompleteContainer">
-            <Autocomplete
-              id="disabled-options-demo"
-              options={timeSlots}
-              getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
-              sx={{ width: 300 }}
-              renderInput={(params) => <TextField {...params} label="バイト開始時間" />}
-            />
-            <Autocomplete
-              id="disabled-options-demo"
-              options={timeSlots}
-              getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
-              sx={{ width: 300 }}
-              renderInput={(params) => <TextField {...params} label="バイト終了時間" />}
-            />
+            <div className={styles.timespace}>
+              <Autocomplete
+                id="disabled-options-demo"
+                options={timeSlots}
+                getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
+                sx={{ width: 300 }}
+                renderInput={(params) => <TextField {...params} label="バイト開始時間" />}
+              />
+            </div>
+            <div className={styles.timespace}>
+              <Autocomplete
+                id="disabled-options-demo"
+                options={timeSlots}
+                getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
+                sx={{ width: 300 }}
+                renderInput={(params) => <TextField {...params} label="バイト終了時間" />}
+              />
+            </div>
           </div>
         </div>
       </div>

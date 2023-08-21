@@ -8,6 +8,7 @@ import { apiClient } from 'src/utils/apiClient';
 import { returnNull } from 'src/utils/returnNull';
 import { userAtom } from '../atoms/user';
 import styles from './index.module.css';
+import Link from 'next/link';
 
 const Home = () => {
   const [user] = useAtom(userAtom);
@@ -50,6 +51,11 @@ const Home = () => {
       <div className={styles.title} style={{ marginTop: '160px' }}>
         Welcome to frourio!
       </div>
+      <Link href="/calendar" legacyBehavior>
+        <button className={styles.createRoomButton}>
+          部屋を作成
+        </button>
+      </Link>
 
       <form style={{ textAlign: 'center', marginTop: '80px' }} onSubmit={createTask}>
         <input value={label} type="text" onChange={inputLabel} />
