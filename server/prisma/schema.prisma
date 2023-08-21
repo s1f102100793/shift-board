@@ -20,5 +20,5 @@ model Shift {
   starttime String
   endtime   String
 
-  @@id([id, date])
+  @@unique([id, date])
 }
