@@ -3,7 +3,7 @@
 import { TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 // import { IconClock } from '@tabler/icons-react';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './ShiftBoard.module.css';
 
 const MONTHS = [
@@ -41,8 +41,8 @@ const ShiftBoard: React.FC = () => {
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
   const [showShiftBar, setShowShiftBar] = useState(false);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
-  const startTimeRef = useRef<HTMLInputElement>(null);
-  const endTimeRef = useRef<HTMLInputElement>(null);
+  const [selectedStartTime, setSelectedStartTime] = useState<string | null>(null);
+  const [selectedEndTime, setSelectedEndTime] = useState<string | null>(null);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -95,16 +95,10 @@ const ShiftBoard: React.FC = () => {
     );
   };
 
-  // const timeSlots = Array.from(new Array(24 * 2)).map(
-  //   (_, index) =>
-  //     `${index < 20 ? '0' : ''}${Math.floor(index / 2)}:${index % 2 === 0 ? '00' : '30'}`
-  // );
-
   const startTimeSlots: string[] = [];
   for (let i = 10; i <= 19; i++) {
     startTimeSlots.push(`${i}:00`);
     if (i !== 19) {
-      // 19:30は追加しないための条件
       startTimeSlots.push(`${i}:30`);
     }
   }
@@ -113,7 +107,6 @@ const ShiftBoard: React.FC = () => {
   for (let i = 11; i <= 23; i++) {
     endTimeSlots.push(`${i}:00`);
     if (i !== 19) {
-      // 19:30は追加しないための条件
       endTimeSlots.push(`${i}:30`);
     }
   }
@@ -204,6 +197,7 @@ const ShiftBoard: React.FC = () => {
                 options={startTimeSlots}
                 sx={{ width: 300 }}
                 renderInput={(params) => <TextField {...params} label="バイト開始時間" />}
+                onChange={(event, newValue) => setSelectedStartTime(newValue)}
               />
             </div>
             <div className={styles.timespace}>
@@ -212,6 +206,7 @@ const ShiftBoard: React.FC = () => {
                 options={endTimeSlots}
                 sx={{ width: 300 }}
                 renderInput={(params) => <TextField {...params} label="バイト終了時間" />}
+                onChange={(event, newValue) => setSelectedEndTime(newValue)}
               />
             </div>
           </div>
