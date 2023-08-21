@@ -7,18 +7,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import styles from './ShiftBoard.module.css';
 
 const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  '1月', // January
+  '2月', // February
+  '3月', // March
+  '4月', // April
+  '5月', // May
+  '6月', // June
+  '7月', // July
+  '8月', // August
+  '9月', // September
+  '10月', // October
+  '11月', // November
+  '12月', // December
 ];
 
 function getDaysInMonth(month: number, year: number) {
@@ -95,14 +95,36 @@ const ShiftBoard: React.FC = () => {
     );
   };
 
-  const timeSlots = Array.from(new Array(24 * 2)).map(
-    (_, index) =>
-      `${index < 20 ? '0' : ''}${Math.floor(index / 2)}:${index % 2 === 0 ? '00' : '30'}`
-  );
+  // const timeSlots = Array.from(new Array(24 * 2)).map(
+  //   (_, index) =>
+  //     `${index < 20 ? '0' : ''}${Math.floor(index / 2)}:${index % 2 === 0 ? '00' : '30'}`
+  // );
+
+  const startTimeSlots: string[] = [];
+  for (let i = 10; i <= 19; i++) {
+    startTimeSlots.push(`${i}:00`);
+    if (i !== 19) {
+      // 19:30は追加しないための条件
+      startTimeSlots.push(`${i}:30`);
+    }
+  }
+
+  const endTimeSlots: string[] = [];
+  for (let i = 11; i <= 23; i++) {
+    endTimeSlots.push(`${i}:00`);
+    if (i !== 19) {
+      // 19:30は追加しないための条件
+      endTimeSlots.push(`${i}:30`);
+    }
+  }
 
   const clearSelectedDays = () => {
     setSelectedDays([]);
   };
+
+  // const createShift = async () => {
+  //   await apiClient.
+  // }
 
   return (
     <div className={styles.container}>
@@ -166,7 +188,7 @@ const ShiftBoard: React.FC = () => {
           </button>
         </div>
         <div className={styles.selectedDaysSection}>
-          選択された日： {selectedDays.map((day) => `${MONTHS[selectedMonth]} ${day}`).join(', ')}
+          選択された日： {selectedDays.map((day) => `${MONTHS[selectedMonth]} ${day}日`).join(', ')}
         </div>
         <button className={styles.addButton} onClick={() => setShowShiftBar(true)}>
           ＋シフトを追加
@@ -179,8 +201,7 @@ const ShiftBoard: React.FC = () => {
             <div className={styles.timespace}>
               <Autocomplete
                 id="disabled-options-demo"
-                options={timeSlots}
-                getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
+                options={startTimeSlots}
                 sx={{ width: 300 }}
                 renderInput={(params) => <TextField {...params} label="バイト開始時間" />}
               />
@@ -188,8 +209,7 @@ const ShiftBoard: React.FC = () => {
             <div className={styles.timespace}>
               <Autocomplete
                 id="disabled-options-demo"
-                options={timeSlots}
-                getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
+                options={endTimeSlots}
                 sx={{ width: 300 }}
                 renderInput={(params) => <TextField {...params} label="バイト終了時間" />}
               />

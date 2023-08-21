@@ -1,5 +1,6 @@
 import type { TaskModel } from 'commonTypesWithClient/models';
 import { useAtom } from 'jotai';
+import Link from 'next/link';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { Loading } from 'src/components/Loading/Loading';
@@ -8,7 +9,6 @@ import { apiClient } from 'src/utils/apiClient';
 import { returnNull } from 'src/utils/returnNull';
 import { userAtom } from '../atoms/user';
 import styles from './index.module.css';
-import Link from 'next/link';
 
 const Home = () => {
   const [user] = useAtom(userAtom);
@@ -52,9 +52,7 @@ const Home = () => {
         Welcome to frourio!
       </div>
       <Link href="/calendar" legacyBehavior>
-        <button className={styles.createRoomButton}>
-          部屋を作成
-        </button>
+        <button className={styles.createRoomButton}>部屋を作成</button>
       </Link>
 
       <form style={{ textAlign: 'center', marginTop: '80px' }} onSubmit={createTask}>
