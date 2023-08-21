@@ -3,7 +3,10 @@
 import { TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 // import { IconClock } from '@tabler/icons-react';
+import { useAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
+import { userAtom } from 'src/atoms/user';
+import { apiClient } from 'src/utils/apiClient';
 import styles from './ShiftBoard.module.css';
 
 const MONTHS = [
@@ -35,6 +38,7 @@ const ShiftBoard: React.FC = () => {
   const now = new Date();
   const today = { day: now.getDate(), month: now.getMonth(), year: now.getFullYear() };
 
+  const [user] = useAtom(userAtom);
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [calendarData, setCalendarData] = useState<(number | null)[]>([]);
@@ -115,9 +119,13 @@ const ShiftBoard: React.FC = () => {
     setSelectedDays([]);
   };
 
-  // const createShift = async () => {
-  //   await apiClient.
-  // }
+  const createShift = async () => {
+    // await apiClient.
+    console.log('aaa');
+    await apiClient.shift.post({
+      body: { id: user?.id, date: null, starttime: selectedStartTime, endtime: selectedEndTime },
+    });
+  };
 
   return (
     <div className={styles.container}>
@@ -208,6 +216,11 @@ const ShiftBoard: React.FC = () => {
                 renderInput={(params) => <TextField {...params} label="バイト終了時間" />}
                 onChange={(event, newValue) => setSelectedEndTime(newValue)}
               />
+            </div>
+            <div className={styles.timespace}>
+              <button className="save-to-database-btn" onClick={createShift}>
+                シフトを送る
+              </button>
             </div>
           </div>
         </div>

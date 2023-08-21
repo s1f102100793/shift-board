@@ -13,3 +13,10 @@ model Task {
   done      Boolean
   createdAt DateTime
 }
+
+model Shift {
+  id        String @id
+  date      String
+  starttime String
+  endtime   String
+}
