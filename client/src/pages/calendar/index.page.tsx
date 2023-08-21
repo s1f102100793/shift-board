@@ -1,6 +1,8 @@
-import { ActionIcon } from '@mantine/core';
-import { TimeInput } from '@mantine/dates';
-import { IconClock } from '@tabler/icons-react';
+// import { ActionIcon } from '@mantine/core';
+// import { TimeInput } from '@mantine/dates';
+import { TextField } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+// import { IconClock } from '@tabler/icons-react';
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './ShiftBoard.module.css';
 
@@ -170,31 +172,25 @@ const ShiftBoard: React.FC = () => {
           ＋シフトを追加
         </button>
         <div className={`${styles.shiftBar} ${showShiftBar ? styles.shiftBarVisible : ''}`}>
-          <button onClick={() => setShowShiftBar(false)}>閉じる</button>
-          <TimeInput
-            label="バイトの希望開始時刻"
-            ref={startTimeRef}
-            step={1800} // 30分おきの選択
-            rightSection={
-              <ActionIcon onClick={() => startTimeRef.current && startTimeRef.current.showPicker()}>
-                <IconClock size="1rem" stroke={1.5} />
-              </ActionIcon>
-            }
-            maw={400}
-            mx="auto"
-          />
-          <TimeInput
-            label="バイトの希望終了時刻"
-            ref={endTimeRef}
-            step={1800} // 30分おきの選択
-            rightSection={
-              <ActionIcon onClick={() => endTimeRef.current && endTimeRef.current.showPicker()}>
-                <IconClock size="1rem" stroke={1.5} />
-              </ActionIcon>
-            }
-            maw={400}
-            mx="auto"
-          />
+          <div className={styles.closeButtonContainer}>
+            <button onClick={() => setShowShiftBar(false)}>閉じる</button>
+          </div>
+          <div className="autocompleteContainer">
+            <Autocomplete
+              id="disabled-options-demo"
+              options={timeSlots}
+              getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
+              sx={{ width: 300 }}
+              renderInput={(params) => <TextField {...params} label="バイト開始時間" />}
+            />
+            <Autocomplete
+              id="disabled-options-demo"
+              options={timeSlots}
+              getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
+              sx={{ width: 300 }}
+              renderInput={(params) => <TextField {...params} label="バイト終了時間" />}
+            />
+          </div>
         </div>
       </div>
     </div>
