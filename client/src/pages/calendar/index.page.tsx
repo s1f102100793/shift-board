@@ -3,22 +3,25 @@
 import { TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 // import { IconClock } from '@tabler/icons-react';
-import React, { useEffect, useRef, useState } from 'react';
+import { useAtom } from 'jotai';
+import React, { useEffect, useState } from 'react';
+import { userAtom } from 'src/atoms/user';
+import { apiClient } from 'src/utils/apiClient';
 import styles from './ShiftBoard.module.css';
 
 const MONTHS = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+  '1月', // January
+  '2月', // February
+  '3月', // March
+  '4月', // April
+  '5月', // May
+  '6月', // June
+  '7月', // July
+  '8月', // August
+  '9月', // September
+  '10月', // October
+  '11月', // November
+  '12月', // December
 ];
 
 function getDaysInMonth(month: number, year: number) {
@@ -35,14 +38,15 @@ const ShiftBoard: React.FC = () => {
   const now = new Date();
   const today = { day: now.getDate(), month: now.getMonth(), year: now.getFullYear() };
 
+  const [user] = useAtom(userAtom);
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [calendarData, setCalendarData] = useState<(number | null)[]>([]);
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
   const [showShiftBar, setShowShiftBar] = useState(false);
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
-  const startTimeRef = useRef<HTMLInputElement>(null);
-  const endTimeRef = useRef<HTMLInputElement>(null);
+  const [selectedStartTime, setSelectedStartTime] = useState<string | null>(null);
+  const [selectedEndTime, setSelectedEndTime] = useState<string | null>(null);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -95,13 +99,53 @@ const ShiftBoard: React.FC = () => {
     );
   };
 
-  const timeSlots = Array.from(new Array(24 * 2)).map(
-    (_, index) =>
-      `${index < 20 ? '0' : ''}${Math.floor(index / 2)}:${index % 2 === 0 ? '00' : '30'}`
-  );
+  const startTimeSlots: string[] = [];
+  for (let i = 10; i <= 19; i++) {
+    startTimeSlots.push(`${i}:00`);
+    if (i !== 19) {
+      startTimeSlots.push(`${i}:30`);
+    }
+  }
+
+  const endTimeSlots: string[] = [];
+  for (let i = 11; i <= 23; i++) {
+    endTimeSlots.push(`${i}:00`);
+    if (i !== 19) {
+      endTimeSlots.push(`${i}:30`);
+    }
+  }
 
   const clearSelectedDays = () => {
     setSelectedDays([]);
+  };
+
+  const createShift = async () => {
+    if (!user) {
+      console.error('User is missing or null');
+      return;
+    }
+    if (
+      selectedStartTime === null ||
+      selectedStartTime === '' ||
+      selectedEndTime === null ||
+      selectedEndTime === ''
+    ) {
+      console.error('Start time or end time is missing!');
+      return;
+    }
+
+    // await apiClient.
+    console.log('aaa');
+    for (const day of selectedDays) {
+      await apiClient.shift.post({
+        body: {
+          id: user.id,
+          date: day.toString(), // selectedDays の各要素を date として使用
+          starttime: selectedStartTime,
+          endtime: selectedEndTime,
+        },
+      });
+    }
   };
 
   return (
@@ -166,7 +210,7 @@ const ShiftBoard: React.FC = () => {
           </button>
         </div>
         <div className={styles.selectedDaysSection}>
-          選択された日： {selectedDays.map((day) => `${MONTHS[selectedMonth]} ${day}`).join(', ')}
+          選択された日： {selectedDays.map((day) => `${MONTHS[selectedMonth]} ${day}日`).join(', ')}
         </div>
         <button className={styles.addButton} onClick={() => setShowShiftBar(true)}>
           ＋シフトを追加
@@ -176,20 +220,29 @@ const ShiftBoard: React.FC = () => {
             <button onClick={() => setShowShiftBar(false)}>閉じる</button>
           </div>
           <div className="autocompleteContainer">
-            <Autocomplete
-              id="disabled-options-demo"
-              options={timeSlots}
-              getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
-              sx={{ width: 300 }}
-              renderInput={(params) => <TextField {...params} label="バイト開始時間" />}
-            />
-            <Autocomplete
-              id="disabled-options-demo"
-              options={timeSlots}
-              getOptionDisabled={(option) => option === timeSlots[0] || option === timeSlots[2]}
-              sx={{ width: 300 }}
-              renderInput={(params) => <TextField {...params} label="バイト終了時間" />}
-            />
+            <div className={styles.timespace}>
+              <Autocomplete
+                id="disabled-options-demo"
+                options={startTimeSlots}
+                sx={{ width: 300 }}
+                renderInput={(params) => <TextField {...params} label="バイト開始時間" />}
+                onChange={(event, newValue) => setSelectedStartTime(newValue)}
+              />
+            </div>
+            <div className={styles.timespace}>
+              <Autocomplete
+                id="disabled-options-demo"
+                options={endTimeSlots}
+                sx={{ width: 300 }}
+                renderInput={(params) => <TextField {...params} label="バイト終了時間" />}
+                onChange={(event, newValue) => setSelectedEndTime(newValue)}
+              />
+            </div>
+            <div className={styles.timespace}>
+              <button className="save-to-database-btn" onClick={createShift}>
+                シフトを送る
+              </button>
+            </div>
           </div>
         </div>
       </div>

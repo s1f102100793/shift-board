@@ -1,5 +1,6 @@
 import type { TaskModel } from 'commonTypesWithClient/models';
 import { useAtom } from 'jotai';
+import Link from 'next/link';
 import type { ChangeEvent, FormEvent } from 'react';
 import { useEffect, useState } from 'react';
 import { Loading } from 'src/components/Loading/Loading';
@@ -50,6 +51,9 @@ const Home = () => {
       <div className={styles.title} style={{ marginTop: '160px' }}>
         Welcome to frourio!
       </div>
+      <Link href="/calendar" legacyBehavior>
+        <button className={styles.createRoomButton}>部屋を作成</button>
+      </Link>
 
       <form style={{ textAlign: 'center', marginTop: '80px' }} onSubmit={createTask}>
         <input value={label} type="text" onChange={inputLabel} />

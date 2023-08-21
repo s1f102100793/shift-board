@@ -224,3 +224,28 @@
 .autocompleteContainer > :first-child {
   margin-right: 20px; /* これを追加：最初のコンポーネントの右側にスペースを追加 */
 }
+
+.timespace {
+  padding-top: 30px;
+}
+
+.save-to-database-btn {
+  background-color: #007bff; /* ボタンの背景色 (例: 青) */
+  color: #ffffff; /* テキストの色 (例: 白) */
+  padding: 10px 20px; /* 内側の余白 (上下10px、左右20px) */
+  border: none; /* ボーダーなし */
+  border-radius: 5px; /* 角の丸み */
+  cursor: pointer; /* ホバー時のカーソルの形状 */
+  font-size: 16px; /* フォントサイズ */
+  transition: background-color 0.3s; /* 背景色の遷移効果 */
+}
+
+/* ホバー時のスタイル */
+.save-to-database-btn:hover {
+  background-color: #0056b3; /* ホバー時の背景色 (例: 濃い青) */
+}
+
+/* アクティブ(クリック時)のスタイル */
+.save-to-database-btn:active {
+  background-color: #004085; /* アクティブ時の背景色 (例: さらに濃い青) */
+}

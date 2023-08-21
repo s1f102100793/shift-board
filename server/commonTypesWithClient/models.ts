@@ -13,3 +13,10 @@ export type TaskModel = {
   done: boolean;
   created: number;
 };
+
+export type ShiftModel = {
+  id: string;
+  date: string;
+  starttime: string;
+  endtime: string;
+};
