@@ -15,8 +15,10 @@ model Task {
 }
 
 model Shift {
-  id        String @id
+  id        String
   date      String
   starttime String
   endtime   String
+
+  @@unique([id, date])
 }

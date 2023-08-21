@@ -1,5 +1,4 @@
 import type { DefineMethods } from 'aspida';
-import type { ShiftModel } from '../../commonTypesWithClient/models';
 
 export type Methods = DefineMethods<{
   get: {
@@ -12,6 +11,5 @@ export type Methods = DefineMethods<{
       starttime: string;
       endtime: string;
     };
-    resBody: ShiftModel;
   };
 }>;
