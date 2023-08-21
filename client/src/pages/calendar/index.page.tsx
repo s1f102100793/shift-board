@@ -120,11 +120,32 @@ const ShiftBoard: React.FC = () => {
   };
 
   const createShift = async () => {
+    if (!user) {
+      console.error('User is missing or null');
+      return;
+    }
+    if (
+      selectedStartTime === null ||
+      selectedStartTime === '' ||
+      selectedEndTime === null ||
+      selectedEndTime === ''
+    ) {
+      console.error('Start time or end time is missing!');
+      return;
+    }
+
     // await apiClient.
     console.log('aaa');
-    await apiClient.shift.post({
-      body: { id: user?.id, date: null, starttime: selectedStartTime, endtime: selectedEndTime },
-    });
+    for (const day of selectedDays) {
+      await apiClient.shift.post({
+        body: {
+          id: user.id,
+          date: day.toString(), // selectedDays の各要素を date として使用
+          starttime: selectedStartTime,
+          endtime: selectedEndTime,
+        },
+      });
+    }
   };
 
   return (
