@@ -21,6 +21,17 @@ const EmployeeTask = () => {
 
   const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<number | null>(null);
+
+  const openModal = (day: number) => {
+    setSelectedDate(day);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   type Shift = {
     id: string;
@@ -73,7 +84,11 @@ const EmployeeTask = () => {
               const isHolidayOrWeekend = isHoliday || isWeekend;
 
               return (
-                <th key={day} className={isHolidayOrWeekend ? styles.holiday : ''}>
+                <th
+                  key={day}
+                  className={isHolidayOrWeekend ? styles.holiday : ''}
+                  onClick={() => openModal(day)}
+                >
                   {day} ({weekDays[dayOfWeek]})
                 </th>
               );
@@ -98,6 +113,21 @@ const EmployeeTask = () => {
           ))}
         </tbody>
       </table>
+      {isModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <button onClick={closeModal}>閉じる</button>
+            {selectedDate !== null && (
+              <h2>
+                {selectedDate}日(
+                {weekDays[new Date(date.getFullYear(), date.getMonth(), selectedDate).getDay()]}
+                )のシフト詳細
+              </h2>
+            )}
+            {/* 詳細設定のフォームやコンテンツをここに追加 */}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
