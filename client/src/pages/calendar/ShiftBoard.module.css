@@ -93,6 +93,10 @@
   background-color: #ffdd57; /* 今日の日付の背景色 */
 }
 
+.pendingShiftDay {
+  background-color: rgba(255, 255, 0, 0.6);
+}
+
 .selectedDay {
   background-color: rgba(
     100,
@@ -100,10 +104,6 @@
     237,
     0.6
   ); /* この色はCornflowerBlueの透明度を60%にしたものです */
-}
-
-.pendingShiftDay {
-  background-color: rgba(255, 255, 0, 0.6);
 }
 
 .sunday {

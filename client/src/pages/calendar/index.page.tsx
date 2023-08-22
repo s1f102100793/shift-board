@@ -147,6 +147,7 @@ const ShiftBoard: React.FC = () => {
         },
       });
     }
+    setSelectedDays([]);
   };
 
   const fetchShift = useCallback(async () => {
