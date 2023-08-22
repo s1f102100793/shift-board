@@ -21,3 +21,10 @@
 .holiday {
   color: red;
 }
+
+.employeeName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px; /* この値は適切に調整してください */
+}
