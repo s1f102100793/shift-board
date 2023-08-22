@@ -47,6 +47,7 @@ const ShiftBoard: React.FC = () => {
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [selectedStartTime, setSelectedStartTime] = useState<string | null>(null);
   const [selectedEndTime, setSelectedEndTime] = useState<string | null>(null);
+  // const [submitShift, setSubmitShift] = useState<string[]>([]);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -147,6 +148,20 @@ const ShiftBoard: React.FC = () => {
       });
     }
   };
+
+  // const fetchShift = async () => {
+  //   try {
+  //     // ここで適切なIDを提供します
+  //     const shifts = await fetchShiftsById('your-user-id');
+
+  //     // shiftsデータから日付だけを取り出す
+  //     const dates = shifts.map((shift: any) => shift.date);
+
+  //     setSubmitShift(dates);
+  //   } catch (error) {
+  //     console.error('Error fetching shifts:', error);
+  //   }
+  // };
 
   return (
     <div className={styles.container}>

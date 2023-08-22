@@ -36,22 +36,40 @@ export const createShift = async (
 //   return toShiftModel(prismaShift);
 // };
 
-// export const shiftRepository = {
-//   save: async (id: string, date: string, starttime: string, endtime: string) => {
-//     await prismaClient.shift.upsert({
-//       where: { id, date }, // 一意な条件を指定
-//       create: {
-//         id,
-//         date,
-//         starttime,
-//         endtime,
-//       },
-//       update: {
-//         date,
-//         starttime,
-//         endtime,
-//       },
-//     });
-//     return;
-//   },
-// };
+export const shiftRepository = {
+  save: async (id: string, date: string, starttime: string, endtime: string) => {
+    console.log('Upserting Shift with the following data:');
+    console.log(`ID: ${id}`);
+    console.log(`Date: ${date}`);
+    console.log(`Start Time: ${starttime}`);
+    console.log(`End Time: ${endtime}`);
+    const res = await prismaClient.shift.upsert({
+      where: { id_date: { id, date } },
+      create: {
+        id,
+        date,
+        starttime,
+        endtime,
+      },
+      update: {
+        starttime,
+        endtime,
+      },
+    });
+    console.log(res.date);
+    return;
+  },
+};
+
+export const getShift = async (): Promise<ShiftModel[]> => {
+  const prismaTasks = await prismaClient.shift.findMany({
+    select: {
+      id: true,
+      date: true,
+      starttime: true,
+      endtime: true,
+    },
+  });
+
+  return prismaTasks.map(toShiftModel);
+};
