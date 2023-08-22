@@ -40,12 +40,34 @@
   align-items: center;
   justify-content: center;
 }
-
 .modal {
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  max-width: 500px;
+  width: 95%; /* もしこれ以上大きくしたい場合はこの値を調整 */
+  max-width: 1400px; /* 最大幅も調整できます */
+  overflow-x: auto; /* もしモーダルの内容が横にはみ出る場合はスクロールバーを表示 */
+}
+
+/* styles.module.css */
+.shiftBar {
+  height: 30px;
+  background-color: #f0f0f0; /* バーの背景色 */
+  position: relative;
+}
+
+.timeTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.timeCell {
+  border: 1px solid #e0e0e0;
+  height: 40px;
+}
+
+.shiftTime {
+  background-color: #3498db;
+  height: 100%;
 }
