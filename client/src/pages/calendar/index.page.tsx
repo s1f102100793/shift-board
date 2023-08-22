@@ -197,6 +197,7 @@ const ShiftBoard: React.FC = () => {
                 .padStart(2, '0')}`;
             }
             const isHoliday = holidays[dateStr];
+            const isPendingShift = day !== null ? pendingShifts.includes(day.toString()) : false;
             return (
               <div
                 key={index}
@@ -209,6 +210,7 @@ const ShiftBoard: React.FC = () => {
                 ${index % 7 === 0 || isHoliday ? styles.sunday : ''} 
                 ${index % 7 === 6 ? styles.saturday : ''} 
                 ${day !== null && selectedDays.includes(day) ? styles.selectedDay : ''} 
+                ${isPendingShift ? styles.pendingShiftDay : ''}
                 `}
                 onClick={() => {
                   if (day !== null) {
