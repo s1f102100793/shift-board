@@ -62,6 +62,8 @@ export const shiftRepository = {
 };
 
 export const getShift = async (myId: string): Promise<ShiftModel[]> => {
+  console.log(myId);
+  console.log('aaa')
   const prismaTasks = await prismaClient.shift.findMany({
     where: { id: myId },
     select: {

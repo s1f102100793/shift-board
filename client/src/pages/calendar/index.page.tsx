@@ -154,6 +154,7 @@ const ShiftBoard: React.FC = () => {
       console.error('User is null or undefined.');
       return;
     }
+    console.log(user.id);
     const getPendingShifts = await apiClient.shift
       .$get({ body: { id: user.id } })
       .catch(returnNull);
@@ -165,11 +166,11 @@ const ShiftBoard: React.FC = () => {
     }
   }, [user, setPendingShifts]);
 
-  useEffect(() => {
-    fetchShift();
-    const intervalId = setInterval(fetchShift, 100);
-    return () => clearInterval(intervalId);
-  }, [fetchShift]);
+  // useEffect(() => {
+  //   fetchShift();
+  //   const intervalId = setInterval(fetchShift, 100);
+  //   return () => clearInterval(intervalId);
+  // }, [fetchShift]);
 
   return (
     <div className={styles.container}>
@@ -266,6 +267,9 @@ const ShiftBoard: React.FC = () => {
             <div className={styles.timespace}>
               <button className="save-to-database-btn" onClick={createShift}>
                 シフトを送る
+              </button>
+              <button className="save-to-database-btn" onClick={fetchShift}>
+                シフトとってくる
               </button>
             </div>
           </div>
