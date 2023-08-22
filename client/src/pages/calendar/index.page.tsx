@@ -268,7 +268,7 @@ const ShiftBoard: React.FC = () => {
               />
             </div>
             <div className={styles.timespace}>
-              <button className="save-to-database-btn" onClick={createShift}>
+              <button className={styles.shiftsubmitnutton} onClick={createShift}>
                 シフトを送る
               </button>
               {/* <button className="save-to-database-btn" onClick={fetchShift}>
