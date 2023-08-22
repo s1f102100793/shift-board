@@ -4,7 +4,7 @@ import { TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 // import { IconClock } from '@tabler/icons-react';
 import { useAtom } from 'jotai';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { userAtom } from 'src/atoms/user';
 import { apiClient } from 'src/utils/apiClient';
 import { returnNull } from 'src/utils/returnNull';
@@ -136,7 +136,6 @@ const ShiftBoard: React.FC = () => {
       return;
     }
 
-    // await apiClient.
     console.log('aaa');
     for (const day of selectedDays) {
       await apiClient.shift.post({
@@ -150,22 +149,27 @@ const ShiftBoard: React.FC = () => {
     }
   };
 
-  const fetchShift = async () => {
-    const getPendingShifts = await apiClient.shift.$get().catch(returnNull);
-    // console.log(getPendingShifts);
+  const fetchShift = useCallback(async () => {
+    if (!user) {
+      console.error('User is null or undefined.');
+      return;
+    }
+    const getPendingShifts = await apiClient.shift
+      .$get({ body: { id: user.id } })
+      .catch(returnNull);
     const getPendingShifts_date =
       getPendingShifts?.map((getPendingShifts) => getPendingShifts.date) || [];
     console.log(getPendingShifts_date);
     if (getPendingShifts_date !== null) {
       setPendingShifts(getPendingShifts_date);
     }
-  };
+  }, [user, setPendingShifts]);
 
   useEffect(() => {
     fetchShift();
     const intervalId = setInterval(fetchShift, 100);
     return () => clearInterval(intervalId);
-  }, []);
+  }, [fetchShift]);
 
   return (
     <div className={styles.container}>

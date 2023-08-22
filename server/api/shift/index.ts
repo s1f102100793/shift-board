@@ -3,6 +3,9 @@ import type { ShiftModel } from '../../commonTypesWithClient/models';
 
 export type Methods = DefineMethods<{
   get: {
+    reqBody: {
+      id: string;
+    };
     // query?: {
     //   limit?: number;
     // };
