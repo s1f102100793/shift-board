@@ -175,6 +175,10 @@ const ShiftBoard: React.FC = () => {
     return () => clearInterval(intervalId);
   }, [fetchShift]);
 
+  const handleDeleteShift = () => {
+    // シフトを削除するための処理をここに記述する
+  };
+
   return (
     <div className={styles.container}>
       {/* Upper Half: Calendar */}
@@ -270,6 +274,9 @@ const ShiftBoard: React.FC = () => {
             <div className={styles.timespace}>
               <button className={styles.shiftsubmitnutton} onClick={createShift}>
                 シフトを送る
+              </button>
+              <button className={styles.deleteShiftButton} onClick={handleDeleteShift}>
+                シフトを消す
               </button>
               {/* <button className="save-to-database-btn" onClick={fetchShift}>
                 シフトとってくる
