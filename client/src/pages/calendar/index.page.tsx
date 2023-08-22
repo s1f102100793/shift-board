@@ -4,9 +4,10 @@ import { TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 // import { IconClock } from '@tabler/icons-react';
 import { useAtom } from 'jotai';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { userAtom } from 'src/atoms/user';
 import { apiClient } from 'src/utils/apiClient';
+import { returnNull } from 'src/utils/returnNull';
 import styles from './ShiftBoard.module.css';
 
 const MONTHS = [
@@ -47,7 +48,7 @@ const ShiftBoard: React.FC = () => {
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [selectedStartTime, setSelectedStartTime] = useState<string | null>(null);
   const [selectedEndTime, setSelectedEndTime] = useState<string | null>(null);
-  // const [submitShift, setSubmitShift] = useState<string[]>([]);
+  const [pendingShifts, setPendingShifts] = useState<string[]>([]);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -135,7 +136,6 @@ const ShiftBoard: React.FC = () => {
       return;
     }
 
-    // await apiClient.
     console.log('aaa');
     for (const day of selectedDays) {
       await apiClient.shift.post({
@@ -147,21 +147,33 @@ const ShiftBoard: React.FC = () => {
         },
       });
     }
+    setSelectedDays([]);
   };
 
-  // const fetchShift = async () => {
-  //   try {
-  //     // ここで適切なIDを提供します
-  //     const shifts = await fetchShiftsById('your-user-id');
+  const fetchShift = useCallback(async () => {
+    if (!user) {
+      console.error('User is null or undefined.');
+      return;
+    }
+    console.log(user.id);
+    const getPendingShifts = await apiClient.shift2
+      .$post({ body: { id: user.id } })
+      .catch(returnNull);
+    const getPendingShifts_date = getPendingShifts?.map((shift) => shift.date);
+    console.log(getPendingShifts_date);
+    if (
+      Array.isArray(getPendingShifts_date) &&
+      getPendingShifts_date.every((item) => typeof item === 'string')
+    ) {
+      setPendingShifts(getPendingShifts_date);
+    }
+  }, [user, setPendingShifts]);
 
-  //     // shiftsデータから日付だけを取り出す
-  //     const dates = shifts.map((shift: any) => shift.date);
-
-  //     setSubmitShift(dates);
-  //   } catch (error) {
-  //     console.error('Error fetching shifts:', error);
-  //   }
-  // };
+  useEffect(() => {
+    fetchShift();
+    const intervalId = setInterval(fetchShift, 100);
+    return () => clearInterval(intervalId);
+  }, [fetchShift]);
 
   return (
     <div className={styles.container}>
@@ -193,6 +205,7 @@ const ShiftBoard: React.FC = () => {
                 .padStart(2, '0')}`;
             }
             const isHoliday = holidays[dateStr];
+            const isPendingShift = day !== null ? pendingShifts.includes(day.toString()) : false;
             return (
               <div
                 key={index}
@@ -205,6 +218,7 @@ const ShiftBoard: React.FC = () => {
                 ${index % 7 === 0 || isHoliday ? styles.sunday : ''} 
                 ${index % 7 === 6 ? styles.saturday : ''} 
                 ${day !== null && selectedDays.includes(day) ? styles.selectedDay : ''} 
+                ${isPendingShift ? styles.pendingShiftDay : ''}
                 `}
                 onClick={() => {
                   if (day !== null) {
@@ -254,9 +268,12 @@ const ShiftBoard: React.FC = () => {
               />
             </div>
             <div className={styles.timespace}>
-              <button className="save-to-database-btn" onClick={createShift}>
+              <button className={styles.shiftsubmitnutton} onClick={createShift}>
                 シフトを送る
               </button>
+              {/* <button className="save-to-database-btn" onClick={fetchShift}>
+                シフトとってくる
+              </button> */}
             </div>
           </div>
         </div>

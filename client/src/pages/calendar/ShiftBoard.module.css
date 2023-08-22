@@ -93,6 +93,10 @@
   background-color: #ffdd57; /* 今日の日付の背景色 */
 }
 
+.pendingShiftDay {
+  background-color: rgba(255, 255, 0, 0.6);
+}
+
 .selectedDay {
   background-color: rgba(
     100,
@@ -227,6 +231,8 @@
 
 .timespace {
   padding-top: 30px;
+  display: flex;
+  justify-content: center;
 }
 
 .save-to-database-btn {
@@ -248,4 +254,23 @@
 /* アクティブ(クリック時)のスタイル */
 .save-to-database-btn:active {
   background-color: #004085; /* アクティブ時の背景色 (例: さらに濃い青) */
+}
+
+.shiftsubmitnutton {
+  background-color: #4caf50; /* 主な背景色 (この場合は緑) */
+  border: none; /* ボーダーをなくす */
+  color: white; /* 文字色は白 */
+  padding: 10px 20px; /* 上下のパディングは10px、左右のパディングは20px */
+  text-align: center; /* テキストは中央寄せ */
+  text-decoration: none; /* テキストの下線をなくす */
+  display: inline-block; /* インラインブロックとして表示 */
+  font-size: 16px; /* フォントサイズは16px */
+  margin: 4px 2px; /* マージンを微調整 */
+  cursor: pointer; /* カーソルを手のアイコンにする */
+  border-radius: 4px; /* 角を少し丸くする */
+  transition: background-color 0.3s; /* 背景色の遷移効果 */
+}
+
+.shiftsubmitButton:hover {
+  background-color: #45a049; /* ホバー時の背景色 */
 }
