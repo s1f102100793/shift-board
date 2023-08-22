@@ -23,6 +23,17 @@ const EmployeeTask = () => {
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  const [editingShift, setEditingShift] = useState<{
+    employeeId: string;
+    startHour: number;
+    endHour?: number;
+  } | null>(null);
+
+  const [draggingShift, setDraggingShift] = useState<{
+    employeeId: string;
+    startHour: number;
+    endHour?: number;
+  } | null>(null);
 
   const openModal = (day: number) => {
     setSelectedDate(day);
@@ -151,7 +162,44 @@ const EmployeeTask = () => {
                             <td
                               key={hour}
                               className={isInShiftTime ? styles.shiftTime : styles.timeCell}
-                            />
+                              onMouseDown={() => {
+                                if (isInShiftTime) {
+                                  setEditingShift({ employeeId: employee, startHour: hour });
+                                }
+                              }}
+                              onMouseEnter={() => {
+                                if (editingShift && editingShift.employeeId === employee) {
+                                  setEditingShift((prev) => {
+                                    // 確実にprevがnullでないことを確認
+                                    if (!prev) return null;
+
+                                    return {
+                                      employeeId: prev.employeeId,
+                                      startHour: prev.startHour,
+                                      endHour: hour,
+                                    };
+                                  });
+                                }
+                              }}
+                              onMouseUp={() => {
+                                if (editingShift) {
+                                  // startTimeとendTimeを更新する処理を追加する
+                                  // 例: データベースやローカルのStateを更新
+
+                                  setEditingShift(null);
+                                }
+                              }}
+                            >
+                              {/* もし編集中のセルであれば、何かしらのUIを表示 */}
+                              {editingShift &&
+                              editingShift.employeeId === employee &&
+                              editingShift.startHour <= hour &&
+                              (typeof editingShift.endHour === 'number'
+                                ? editingShift.endHour > hour
+                                : true) ? (
+                                <div className={styles.editingTimeIndicator} />
+                              ) : null}
+                            </td>
                           );
                         })}
                       </tr>
