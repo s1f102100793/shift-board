@@ -168,11 +168,11 @@ const ShiftBoard: React.FC = () => {
     }
   }, [user, setPendingShifts]);
 
-  // useEffect(() => {
-  //   fetchShift();
-  //   const intervalId = setInterval(fetchShift, 100);
-  //   return () => clearInterval(intervalId);
-  // }, [fetchShift]);
+  useEffect(() => {
+    fetchShift();
+    const intervalId = setInterval(fetchShift, 100);
+    return () => clearInterval(intervalId);
+  }, [fetchShift]);
 
   return (
     <div className={styles.container}>
@@ -270,9 +270,9 @@ const ShiftBoard: React.FC = () => {
               <button className="save-to-database-btn" onClick={createShift}>
                 シフトを送る
               </button>
-              <button className="save-to-database-btn" onClick={fetchShift}>
+              {/* <button className="save-to-database-btn" onClick={fetchShift}>
                 シフトとってくる
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
