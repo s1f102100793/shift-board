@@ -12,6 +12,16 @@ const employees = [
   '小林悠',
   '石田光',
   '加藤あや',
+  '田中太郎',
+  '佐藤次郎',
+  '鈴木花子',
+  '山田一郎',
+  '木村太一',
+  '高橋雅子',
+  '中村翔太',
+  '小林悠',
+  '石田光',
+  '加藤あや',
 ];
 
 const EmployeeTask = () => {
@@ -154,6 +164,7 @@ const EmployeeTask = () => {
                           const shiftForDay = shifts.find(
                             (shift) => shift.id === employee && shift.date === selectedDate
                           );
+                          
                           const [startHour] = shiftForDay?.startTime.split(':').map(Number) || [];
                           const [endHour] = shiftForDay?.endTime.split(':').map(Number) || [];
                           const isInShiftTime = startHour <= hour && hour < endHour;
