@@ -7,6 +7,7 @@ import { useAtom } from 'jotai';
 import React, { useEffect, useState } from 'react';
 import { userAtom } from 'src/atoms/user';
 import { apiClient } from 'src/utils/apiClient';
+import { returnNull } from 'src/utils/returnNull';
 import styles from './ShiftBoard.module.css';
 
 const MONTHS = [
@@ -47,7 +48,7 @@ const ShiftBoard: React.FC = () => {
   const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [selectedStartTime, setSelectedStartTime] = useState<string | null>(null);
   const [selectedEndTime, setSelectedEndTime] = useState<string | null>(null);
-  // const [submitShift, setSubmitShift] = useState<string[]>([]);
+  const [pendingShifts, setPendingShifts] = useState<string[]>([]);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -149,19 +150,22 @@ const ShiftBoard: React.FC = () => {
     }
   };
 
-  // const fetchShift = async () => {
-  //   try {
-  //     // ここで適切なIDを提供します
-  //     const shifts = await fetchShiftsById('your-user-id');
+  const fetchShift = async () => {
+    const getPendingShifts = await apiClient.shift.$get().catch(returnNull);
+    // console.log(getPendingShifts);
+    const getPendingShifts_date =
+      getPendingShifts?.map((getPendingShifts) => getPendingShifts.date) || [];
+    console.log(getPendingShifts_date);
+    if (getPendingShifts_date !== null) {
+      setPendingShifts(getPendingShifts_date);
+    }
+  };
 
-  //     // shiftsデータから日付だけを取り出す
-  //     const dates = shifts.map((shift: any) => shift.date);
-
-  //     setSubmitShift(dates);
-  //   } catch (error) {
-  //     console.error('Error fetching shifts:', error);
-  //   }
-  // };
+  useEffect(() => {
+    fetchShift();
+    const intervalId = setInterval(fetchShift, 100);
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <div className={styles.container}>
