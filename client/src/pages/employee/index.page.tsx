@@ -21,6 +21,17 @@ const EmployeeTask = () => {
 
   const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<number | null>(null);
+
+  const openModal = (day: number) => {
+    setSelectedDate(day);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   type Shift = {
     id: string;
@@ -73,7 +84,11 @@ const EmployeeTask = () => {
               const isHolidayOrWeekend = isHoliday || isWeekend;
 
               return (
-                <th key={day} className={isHolidayOrWeekend ? styles.holiday : ''}>
+                <th
+                  key={day}
+                  className={isHolidayOrWeekend ? styles.holiday : ''}
+                  onClick={() => openModal(day)}
+                >
                   {day} ({weekDays[dayOfWeek]})
                 </th>
               );
@@ -98,6 +113,56 @@ const EmployeeTask = () => {
           ))}
         </tbody>
       </table>
+      {isModalOpen && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <button onClick={closeModal}>閉じる</button>
+            {selectedDate !== null && (
+              <div>
+                <h2>
+                  {selectedDate}日(
+                  {weekDays[new Date(date.getFullYear(), date.getMonth(), selectedDate).getDay()]}
+                  )のシフト詳細
+                </h2>
+
+                <table className={styles.timeTable}>
+                  <thead>
+                    <tr>
+                      <th>名前</th>
+                      {/* 10時から24時までを1時間ごとに表示 */}
+                      {Array.from({ length: 15 }, (_, i) => 10 + i).map((hour) => (
+                        <th key={hour}>{hour}:00</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {employees.map((employee) => (
+                      <tr key={employee}>
+                        <td>{employee}</td>
+                        {Array.from({ length: 15 }, (_, i) => 10 + i).map((hour) => {
+                          const shiftForDay = shifts.find(
+                            (shift) => shift.id === employee && shift.date === selectedDate
+                          );
+                          const [startHour] = shiftForDay?.startTime.split(':').map(Number) || [];
+                          const [endHour] = shiftForDay?.endTime.split(':').map(Number) || [];
+                          const isInShiftTime = startHour <= hour && hour < endHour;
+
+                          return (
+                            <td
+                              key={hour}
+                              className={isInShiftTime ? styles.shiftTime : styles.timeCell}
+                            />
+                          );
+                        })}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
