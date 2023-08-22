@@ -1,8 +1,8 @@
-import { getShift, shiftRepository } from '$/repository/shiftRepository';
+import { shiftRepository } from '$/repository/shiftRepository';
 import { defineController } from './$relay';
 
 export default defineController(() => ({
-  get: async ({ body }) => ({ status: 200, body: await getShift(body.id) }),
+  get: () => ({ status: 200, body: 'Hello' }),
   // post: async ({ body }) => ({
   //   status: 201,
   //   body: await createOrUpdateShift(body.id, body.date, body.starttime, body.endtime),

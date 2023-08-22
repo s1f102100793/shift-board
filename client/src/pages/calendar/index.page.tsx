@@ -155,13 +155,15 @@ const ShiftBoard: React.FC = () => {
       return;
     }
     console.log(user.id);
-    const getPendingShifts = await apiClient.shift
-      .$get({ body: { id: user.id } })
+    const getPendingShifts = await apiClient.shift2
+      .$post({ body: { id: user.id } })
       .catch(returnNull);
-    const getPendingShifts_date =
-      getPendingShifts?.map((getPendingShifts) => getPendingShifts.date) || [];
+    const getPendingShifts_date = getPendingShifts?.map((shift) => shift.date);
     console.log(getPendingShifts_date);
-    if (getPendingShifts_date !== null) {
+    if (
+      Array.isArray(getPendingShifts_date) &&
+      getPendingShifts_date.every((item) => typeof item === 'string')
+    ) {
       setPendingShifts(getPendingShifts_date);
     }
   }, [user, setPendingShifts]);
