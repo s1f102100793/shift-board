@@ -18,6 +18,7 @@ const EmployeeTask = () => {
     startHour: string;
     endHour?: string;
   } | null>(null);
+  const [newShifts, setNewShifts] = useState<ShiftModel[]>([]);
 
   const [draggingShift, setDraggingShift] = useState<{
     employeeId: string;
