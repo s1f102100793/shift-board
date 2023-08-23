@@ -18,13 +18,6 @@ const EmployeeTask = () => {
     startHour: string;
     endHour?: string;
   } | null>(null);
-  const [newShifts, setNewShifts] = useState<ShiftModel[]>([]);
-
-  const [draggingShift, setDraggingShift] = useState<{
-    employeeId: string;
-    startHour: string;
-    endHour?: string;
-  } | null>(null);
 
   const openModal = (day: string) => {
     setSelectedDate(day);
@@ -46,6 +39,15 @@ const EmployeeTask = () => {
       const uniqueEmployeeIds = [...new Set(fetchedShifts.map((shift) => shift.id))];
       setEmployees(uniqueEmployeeIds);
     }
+  };
+
+  const updateShiftInDatabase = async (
+    employeeId: string,
+    date: string,
+    newStartTime: string,
+    newEndTime: string
+  ) => {
+    //
   };
 
   useEffect(() => {
@@ -110,6 +112,7 @@ const EmployeeTask = () => {
           ))}
         </tbody>
       </table>
+
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -160,10 +163,24 @@ const EmployeeTask = () => {
                               (startHour === currentHour && startMinute <= currentMinutes)) &&
                             (endHour > currentHour ||
                               (endHour === currentHour && endMinute > currentMinutes));
+
+                          const isInEditingTime =
+                            editingShift?.employeeId === employee &&
+                            typeof editingShift?.startHour === 'string' &&
+                            typeof editingShift?.endHour === 'string' &&
+                            parseFloat(editingShift.startHour) <= hour &&
+                            parseFloat(editingShift.endHour) > hour;
+
                           return (
                             <td
                               key={hour}
-                              className={isInShiftTime ? styles.shiftTime : styles.timeCell}
+                              className={
+                                isInEditingTime
+                                  ? styles.editingTime
+                                  : isInShiftTime
+                                  ? styles.shiftTime
+                                  : styles.timeCell
+                              }
                               onMouseDown={() => {
                                 if (isInShiftTime) {
                                   setEditingShift({
@@ -186,10 +203,23 @@ const EmployeeTask = () => {
                                 }
                               }}
                               onMouseUp={() => {
-                                if (editingShift) {
+                                if (
+                                  editingShift &&
+                                  typeof editingShift.startHour === 'string' &&
+                                  editingShift.startHour.trim() !== '' &&
+                                  typeof editingShift.endHour === 'string' &&
+                                  editingShift.endHour.trim() !== ''
+                                ) {
                                   // startTimeとendTimeを更新する処理を追加する
-                                  // 例: データベースやローカルのStateを更新
+                                  const newStartTime = editingShift.startHour;
+                                  const newEndTime = editingShift.endHour;
 
+                                  updateShiftInDatabase(
+                                    employee,
+                                    selectedDate,
+                                    newStartTime,
+                                    newEndTime
+                                  );
                                   setEditingShift(null);
                                 }
                               }}
