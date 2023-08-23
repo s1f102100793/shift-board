@@ -164,7 +164,7 @@ const EmployeeTask = () => {
                           const shiftForDay = shifts.find(
                             (shift) => shift.id === employee && shift.date === selectedDate
                           );
-                          
+
                           const [startHour] = shiftForDay?.startTime.split(':').map(Number) || [];
                           const [endHour] = shiftForDay?.endTime.split(':').map(Number) || [];
                           const isInShiftTime = startHour <= hour && hour < endHour;
