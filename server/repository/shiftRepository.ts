@@ -68,7 +68,7 @@ export const shiftRepository2 = {
     console.log(`Date: ${date}`);
     console.log(`Start Time: ${starttime}`);
     console.log(`End Time: ${endtime}`);
-    const res = await prismaClient.fixedShift.upsert({
+    const res = await prismaClient.fixedshift.upsert({
       where: { id_date: { id, date } },
       create: {
         id,
@@ -100,6 +100,20 @@ export const getShift = async (myId: string): Promise<ShiftModel[]> => {
   return prismaTasks.map(toShiftModel);
 };
 
+export const getFixedShiftOnlyId = async (myId: string): Promise<ShiftModel[]> => {
+  const prismaTasks = await prismaClient.shift.findMany({
+    where: { id: myId },
+    select: {
+      id: true,
+      date: true,
+      starttime: true,
+      endtime: true,
+    },
+  });
+
+  return prismaTasks.map(toShiftModel);
+};
+
 export const getSubmitShift = async (): Promise<ShiftModel[]> => {
   const prismaTasks = await prismaClient.shift.findMany({
     select: {
@@ -114,7 +128,7 @@ export const getSubmitShift = async (): Promise<ShiftModel[]> => {
 };
 
 export const getFixedShift = async (): Promise<ShiftModel[]> => {
-  const prismaTasks = await prismaClient.fixedShift.findMany({
+  const prismaTasks = await prismaClient.fixedshift.findMany({
     select: {
       id: true,
       date: true,

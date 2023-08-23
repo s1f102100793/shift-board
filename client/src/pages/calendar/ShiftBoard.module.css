@@ -106,6 +106,10 @@
   ); /* この色はCornflowerBlueの透明度を60%にしたものです */
 }
 
+.fixedShiftDay {
+  background-color: rgba(0, 128, 0, 0.6);
+}
+
 .sunday {
   color: red; /* 日曜日の色 */
 }

@@ -49,6 +49,7 @@ const ShiftBoard: React.FC = () => {
   const [selectedStartTime, setSelectedStartTime] = useState<string | null>(null);
   const [selectedEndTime, setSelectedEndTime] = useState<string | null>(null);
   const [pendingShifts, setPendingShifts] = useState<string[]>([]);
+  const [shifts, setShifts] = useState<string[]>([]);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -136,7 +137,7 @@ const ShiftBoard: React.FC = () => {
       return;
     }
 
-    console.log('aaa');
+    // console.log('aaa');
     for (const day of selectedDays) {
       await apiClient.shift.post({
         body: {
@@ -155,12 +156,12 @@ const ShiftBoard: React.FC = () => {
       console.error('User is null or undefined.');
       return;
     }
-    console.log(user.id);
+    // console.log(user.id);
     const getPendingShifts = await apiClient.shift2
       .$post({ body: { id: user.id } })
       .catch(returnNull);
     const getPendingShifts_date = getPendingShifts?.map((shift) => shift.date);
-    console.log(getPendingShifts_date);
+    // console.log(getPendingShifts_date);
     if (
       Array.isArray(getPendingShifts_date) &&
       getPendingShifts_date.every((item) => typeof item === 'string')
@@ -169,11 +170,28 @@ const ShiftBoard: React.FC = () => {
     }
   }, [user, setPendingShifts]);
 
+  const fetchFixedShift = useCallback(async () => {
+    if (!user) {
+      console.error('User is null or undefined.');
+      return;
+    }
+    const fetchedShifts = await apiClient.shift3.$post({ body: { id: user.id } }).catch(returnNull);
+    const fetchedShifts_date = fetchedShifts?.map((shift) => shift.date);
+    console.log(fetchedShifts_date);
+    if (
+      Array.isArray(fetchedShifts_date) &&
+      fetchedShifts_date.every((item) => typeof item === 'string')
+    ) {
+      setShifts(fetchedShifts_date);
+    }
+  }, [user, setShifts]);
+
   useEffect(() => {
     fetchShift();
+    fetchFixedShift();
     const intervalId = setInterval(fetchShift, 100);
     return () => clearInterval(intervalId);
-  }, [fetchShift]);
+  }, [fetchShift, fetchFixedShift]);
 
   const handleDeleteShift = async () => {
     if (user && typeof user.id === 'string') {
@@ -214,6 +232,7 @@ const ShiftBoard: React.FC = () => {
             }
             const isHoliday = holidays[dateStr];
             const isPendingShift = day !== null ? pendingShifts.includes(day.toString()) : false;
+            const isFixedShift = day !== null ? shifts.includes(day?.toString()) : false;
             return (
               <div
                 key={index}
@@ -227,6 +246,7 @@ const ShiftBoard: React.FC = () => {
                 ${index % 7 === 6 ? styles.saturday : ''} 
                 ${day !== null && selectedDays.includes(day) ? styles.selectedDay : ''} 
                 ${isPendingShift ? styles.pendingShiftDay : ''}
+                ${isFixedShift ? styles.fixedShiftDay : ''} 
                 `}
                 onClick={() => {
                   if (day !== null) {
