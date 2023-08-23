@@ -129,11 +129,23 @@ const EmployeeTask = () => {
                 const shiftForDay = shifts.find(
                   (shift) => shift.id === employee && shift.date === day.toString()
                 );
-                return (
-                  <td key={day}>
-                    {shiftForDay ? `${shiftForDay.starttime} - ${shiftForDay.endtime}` : ''}
-                  </td>
+
+                const fixedShiftForDay = fixedShifts.find(
+                  (shift) => shift.id === employee && shift.date === day.toString()
                 );
+
+                let displayShift;
+                if (fixedShiftForDay) {
+                  displayShift = (
+                    <span
+                      className={styles.redText}
+                    >{`${fixedShiftForDay.starttime} - ${fixedShiftForDay.endtime}`}</span>
+                  );
+                } else if (shiftForDay) {
+                  displayShift = `${shiftForDay.starttime} - ${shiftForDay.endtime}`;
+                }
+
+                return <td key={day}>{displayShift}</td>;
               })}
             </tr>
           ))}
