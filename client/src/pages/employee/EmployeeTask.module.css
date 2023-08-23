@@ -76,3 +76,9 @@
   /* 編集中の時間を示すためのスタイルを追加 */
   background-color: rgba(255, 0, 0, 0.5);
 }
+
+.editingTime {
+  background-color: rgba(255, 165, 0, 0.8); /* オレンジ色で半透明に設定 */
+  height: 100%; /* セル全体をカバーするように設定 */
+  position: relative;
+}
