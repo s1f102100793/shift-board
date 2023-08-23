@@ -83,7 +83,7 @@ const EmployeeTask = () => {
                 <th
                   key={day}
                   className={isHolidayOrWeekend ? styles.holiday : ''}
-                  onClick={() => openModal(day)}
+                  onClick={() => openModal(day.toString())}
                 >
                   {day} ({weekDays[dayOfWeek]})
                 </th>
@@ -97,7 +97,7 @@ const EmployeeTask = () => {
               <td className={styles.employeeName}>{employee}</td>
               {daysArray.map((day) => {
                 const shiftForDay = shifts.find(
-                  (shift) => shift.id === employee && shift.date === day
+                  (shift) => shift.id === employee && shift.date === day.toString()
                 );
                 return (
                   <td key={day}>
@@ -117,7 +117,11 @@ const EmployeeTask = () => {
               <div>
                 <h2>
                   {selectedDate}日(
-                  {weekDays[new Date(date.getFullYear(), date.getMonth(), selectedDate).getDay()]}
+                  {
+                    weekDays[
+                      new Date(date.getFullYear(), date.getMonth(), Number(selectedDate)).getDay()
+                    ]
+                  }
                   )のシフト詳細
                 </h2>
 
@@ -139,30 +143,30 @@ const EmployeeTask = () => {
                           const shiftForDay = shifts.find(
                             (shift) => shift.id === employee && shift.date === selectedDate
                           );
-
-                          const [startHour] = shiftForDay?.startTime.split(':').map(Number) || [];
-                          const [endHour] = shiftForDay?.endTime.split(':').map(Number) || [];
+                          const [startHour] = shiftForDay?.starttime.split(':').map(Number) || [];
+                          const [endHour] = shiftForDay?.endtime.split(':').map(Number) || [];
                           const isInShiftTime = startHour <= hour && hour < endHour;
-
                           return (
                             <td
                               key={hour}
                               className={isInShiftTime ? styles.shiftTime : styles.timeCell}
                               onMouseDown={() => {
                                 if (isInShiftTime) {
-                                  setEditingShift({ employeeId: employee, startHour: hour });
+                                  setEditingShift({
+                                    employeeId: employee,
+                                    startHour: hour.toString(),
+                                  });
                                 }
                               }}
                               onMouseEnter={() => {
                                 if (editingShift && editingShift.employeeId === employee) {
                                   setEditingShift((prev) => {
-                                    // 確実にprevがnullでないことを確認
                                     if (!prev) return null;
 
                                     return {
                                       employeeId: prev.employeeId,
                                       startHour: prev.startHour,
-                                      endHour: hour,
+                                      endHour: hour.toString(),
                                     };
                                   });
                                 }
@@ -179,9 +183,9 @@ const EmployeeTask = () => {
                               {/* もし編集中のセルであれば、何かしらのUIを表示 */}
                               {editingShift &&
                               editingShift.employeeId === employee &&
-                              editingShift.startHour <= hour &&
-                              (typeof editingShift.endHour === 'number'
-                                ? editingShift.endHour > hour
+                              parseInt(editingShift.startHour, 10) <= hour &&
+                              (typeof editingShift.endHour === 'string'
+                                ? parseInt(editingShift.endHour, 10) > hour
                                 : true) ? (
                                 <div className={styles.editingTimeIndicator} />
                               ) : null}
