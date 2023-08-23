@@ -274,3 +274,15 @@
 .shiftsubmitButton:hover {
   background-color: #45a049; /* ホバー時の背景色 */
 }
+
+/* CSS (仮想的な例) */
+.deleteShiftButton {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: red;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+}

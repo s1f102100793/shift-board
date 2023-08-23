@@ -71,3 +71,8 @@
   background-color: #3498db;
   height: 100%;
 }
+
+.editingTimeIndicator {
+  /* 編集中の時間を示すためのスタイルを追加 */
+  background-color: rgba(255, 0, 0, 0.5);
+}

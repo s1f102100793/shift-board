@@ -12,6 +12,16 @@ const employees = [
   '小林悠',
   '石田光',
   '加藤あや',
+  '田中太郎',
+  '佐藤次郎',
+  '鈴木花子',
+  '山田一郎',
+  '木村太一',
+  '高橋雅子',
+  '中村翔太',
+  '小林悠',
+  '石田光',
+  '加藤あや',
 ];
 
 const EmployeeTask = () => {
@@ -23,6 +33,17 @@ const EmployeeTask = () => {
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  const [editingShift, setEditingShift] = useState<{
+    employeeId: string;
+    startHour: number;
+    endHour?: number;
+  } | null>(null);
+
+  const [draggingShift, setDraggingShift] = useState<{
+    employeeId: string;
+    startHour: number;
+    endHour?: number;
+  } | null>(null);
 
   const openModal = (day: number) => {
     setSelectedDate(day);
@@ -143,6 +164,7 @@ const EmployeeTask = () => {
                           const shiftForDay = shifts.find(
                             (shift) => shift.id === employee && shift.date === selectedDate
                           );
+
                           const [startHour] = shiftForDay?.startTime.split(':').map(Number) || [];
                           const [endHour] = shiftForDay?.endTime.split(':').map(Number) || [];
                           const isInShiftTime = startHour <= hour && hour < endHour;
@@ -151,7 +173,44 @@ const EmployeeTask = () => {
                             <td
                               key={hour}
                               className={isInShiftTime ? styles.shiftTime : styles.timeCell}
-                            />
+                              onMouseDown={() => {
+                                if (isInShiftTime) {
+                                  setEditingShift({ employeeId: employee, startHour: hour });
+                                }
+                              }}
+                              onMouseEnter={() => {
+                                if (editingShift && editingShift.employeeId === employee) {
+                                  setEditingShift((prev) => {
+                                    // 確実にprevがnullでないことを確認
+                                    if (!prev) return null;
+
+                                    return {
+                                      employeeId: prev.employeeId,
+                                      startHour: prev.startHour,
+                                      endHour: hour,
+                                    };
+                                  });
+                                }
+                              }}
+                              onMouseUp={() => {
+                                if (editingShift) {
+                                  // startTimeとendTimeを更新する処理を追加する
+                                  // 例: データベースやローカルのStateを更新
+
+                                  setEditingShift(null);
+                                }
+                              }}
+                            >
+                              {/* もし編集中のセルであれば、何かしらのUIを表示 */}
+                              {editingShift &&
+                              editingShift.employeeId === employee &&
+                              editingShift.startHour <= hour &&
+                              (typeof editingShift.endHour === 'number'
+                                ? editingShift.endHour > hour
+                                : true) ? (
+                                <div className={styles.editingTimeIndicator} />
+                              ) : null}
+                            </td>
                           );
                         })}
                       </tr>
