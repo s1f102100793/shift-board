@@ -47,6 +47,10 @@ const EmployeeTask = () => {
     }
   };
 
+  const updateShiftInDatabase = async (employeeId:string, date:string, newStartTime:string, newEndTime:string) => {
+    //
+  };
+
   useEffect(() => {
     fetchShift();
   }, []);
@@ -109,6 +113,7 @@ const EmployeeTask = () => {
           ))}
         </tbody>
       </table>
+
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
@@ -159,10 +164,22 @@ const EmployeeTask = () => {
                               (startHour === currentHour && startMinute <= currentMinutes)) &&
                             (endHour > currentHour ||
                               (endHour === currentHour && endMinute > currentMinutes));
+
+                          const isInEditingTime =
+                            editingShift &&
+                            editingShift.employeeId === employee &&
+                            parseFloat(editingShift.startHour) <= hour &&
+                            parseFloat(editingShift.endHour) > hour;
                           return (
                             <td
                               key={hour}
-                              className={isInShiftTime ? styles.shiftTime : styles.timeCell}
+                              className={
+                                isInEditingTime
+                                  ? styles.editingTime
+                                  : isInShiftTime
+                                  ? styles.shiftTime
+                                  : styles.timeCell
+                              }
                               onMouseDown={() => {
                                 if (isInShiftTime) {
                                   setEditingShift({
@@ -187,8 +204,15 @@ const EmployeeTask = () => {
                               onMouseUp={() => {
                                 if (editingShift) {
                                   // startTimeとendTimeを更新する処理を追加する
-                                  // 例: データベースやローカルのStateを更新
+                                  const newStartTime = editingShift.startHour;
+                                  const newEndTime = editingShift.endHour;
 
+                                  updateShiftInDatabase(
+                                    employee,
+                                    selectedDate,
+                                    newStartTime,
+                                    newEndTime
+                                  );
                                   setEditingShift(null);
                                 }
                               }}
