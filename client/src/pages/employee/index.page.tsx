@@ -29,6 +29,7 @@ const EmployeeTask = () => {
   };
 
   const [shifts, setShifts] = useState<ShiftModel[]>([]);
+  const [fixedShifts, setFixedShifts] = useState<ShiftModel[]>([]);
   const [employees, setEmployees] = useState<string[]>([]);
 
   const fetchShift = async () => {
@@ -38,6 +39,13 @@ const EmployeeTask = () => {
       setShifts(fetchedShifts);
       const uniqueEmployeeIds = [...new Set(fetchedShifts.map((shift) => shift.id))];
       setEmployees(uniqueEmployeeIds);
+    }
+  };
+
+  const fetchFixedShift = async () => {
+    const fetchedFixedShifts = await apiClient.fixedshift.$get().catch(returnNull);
+    if (fetchedFixedShifts !== null && fetchedFixedShifts !== undefined) {
+      setFixedShifts(fetchedFixedShifts);
     }
   };
 
@@ -59,6 +67,7 @@ const EmployeeTask = () => {
 
   useEffect(() => {
     fetchShift();
+    fetchFixedShift();
   }, []);
 
   useEffect(() => {
