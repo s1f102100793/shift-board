@@ -66,10 +66,14 @@ const EmployeeTask = () => {
   };
 
   useEffect(() => {
-    fetchShift();
-    fetchFixedShift();
+    const intervalId = setInterval(() => {
+      fetchShift();
+      fetchFixedShift();
+    }, 100);
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
-
   useEffect(() => {
     fetch('https://holidays-jp.github.io/api/v1/date.json')
       .then((res) => res.json())
@@ -174,11 +178,28 @@ const EmployeeTask = () => {
                             .split(':')
                             .map(Number) || [0, 0];
 
+                          const fixedShiftForDay = fixedShifts.find(
+                            (shift) => shift.id === employee && shift.date === selectedDate
+                          );
+                          const [fixedStartHour, fixedStartMinute] = fixedShiftForDay?.starttime
+                            .split(':')
+                            .map(Number) || [0, 0];
+                          const [fixedEndHour, fixedEndMinute] = fixedShiftForDay?.endtime
+                            .split(':')
+                            .map(Number) || [0, 0];
+
                           const isInShiftTime =
                             (startHour < currentHour ||
                               (startHour === currentHour && startMinute <= currentMinutes)) &&
                             (endHour > currentHour ||
                               (endHour === currentHour && endMinute > currentMinutes));
+
+                          const isInFixedShiftTime =
+                            (fixedStartHour < currentHour ||
+                              (fixedStartHour === currentHour &&
+                                fixedStartMinute <= currentMinutes)) &&
+                            (fixedEndHour > currentHour ||
+                              (fixedEndHour === currentHour && fixedEndMinute > currentMinutes));
 
                           const isInEditingTime =
                             editingShift?.employeeId === employee &&
@@ -192,6 +213,8 @@ const EmployeeTask = () => {
                               key={hour}
                               className={
                                 isInEditingTime
+                                  ? styles.editingTime
+                                  : isInFixedShiftTime
                                   ? styles.editingTime
                                   : isInShiftTime
                                   ? styles.shiftTime
