@@ -29,6 +29,7 @@ const EmployeeTask = () => {
   };
 
   const [shifts, setShifts] = useState<ShiftModel[]>([]);
+  const [fixedShifts, setFixedShifts] = useState<ShiftModel[]>([]);
   const [employees, setEmployees] = useState<string[]>([]);
 
   const fetchShift = async () => {
@@ -38,6 +39,13 @@ const EmployeeTask = () => {
       setShifts(fetchedShifts);
       const uniqueEmployeeIds = [...new Set(fetchedShifts.map((shift) => shift.id))];
       setEmployees(uniqueEmployeeIds);
+    }
+  };
+
+  const fetchFixedShift = async () => {
+    const fetchedFixedShifts = await apiClient.fixedshift.$get().catch(returnNull);
+    if (fetchedFixedShifts !== null && fetchedFixedShifts !== undefined) {
+      setFixedShifts(fetchedFixedShifts);
     }
   };
 
@@ -58,7 +66,13 @@ const EmployeeTask = () => {
   };
 
   useEffect(() => {
-    fetchShift();
+    const intervalId = setInterval(() => {
+      fetchShift();
+      fetchFixedShift();
+    }, 100);
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   useEffect(() => {
@@ -71,6 +85,12 @@ const EmployeeTask = () => {
         console.error('Failed to fetch holidays:', error);
       });
   }, []);
+
+  const formatTime = (hourFloat: number) => {
+    const hours = Math.floor(hourFloat);
+    const minutes = hourFloat % 1 === 0.5 ? 30 : 0;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className={styles.container}>
@@ -109,11 +129,23 @@ const EmployeeTask = () => {
                 const shiftForDay = shifts.find(
                   (shift) => shift.id === employee && shift.date === day.toString()
                 );
-                return (
-                  <td key={day}>
-                    {shiftForDay ? `${shiftForDay.starttime} - ${shiftForDay.endtime}` : ''}
-                  </td>
+
+                const fixedShiftForDay = fixedShifts.find(
+                  (shift) => shift.id === employee && shift.date === day.toString()
                 );
+
+                let displayShift;
+                if (fixedShiftForDay) {
+                  displayShift = (
+                    <span
+                      className={styles.redText}
+                    >{`${fixedShiftForDay.starttime} - ${fixedShiftForDay.endtime}`}</span>
+                  );
+                } else if (shiftForDay) {
+                  displayShift = `${shiftForDay.starttime} - ${shiftForDay.endtime}`;
+                }
+
+                return <td key={day}>{displayShift}</td>;
               })}
             </tr>
           ))}
@@ -165,11 +197,28 @@ const EmployeeTask = () => {
                             .split(':')
                             .map(Number) || [0, 0];
 
+                          const fixedShiftForDay = fixedShifts.find(
+                            (shift) => shift.id === employee && shift.date === selectedDate
+                          );
+                          const [fixedStartHour, fixedStartMinute] = fixedShiftForDay?.starttime
+                            .split(':')
+                            .map(Number) || [0, 0];
+                          const [fixedEndHour, fixedEndMinute] = fixedShiftForDay?.endtime
+                            .split(':')
+                            .map(Number) || [0, 0];
+
                           const isInShiftTime =
                             (startHour < currentHour ||
                               (startHour === currentHour && startMinute <= currentMinutes)) &&
                             (endHour > currentHour ||
                               (endHour === currentHour && endMinute > currentMinutes));
+
+                          const isInFixedShiftTime =
+                            (fixedStartHour < currentHour ||
+                              (fixedStartHour === currentHour &&
+                                fixedStartMinute <= currentMinutes)) &&
+                            (fixedEndHour > currentHour ||
+                              (fixedEndHour === currentHour && fixedEndMinute > currentMinutes));
 
                           const isInEditingTime =
                             editingShift?.employeeId === employee &&
@@ -183,6 +232,8 @@ const EmployeeTask = () => {
                               key={hour}
                               className={
                                 isInEditingTime
+                                  ? styles.editingTime
+                                  : isInFixedShiftTime
                                   ? styles.editingTime
                                   : isInShiftTime
                                   ? styles.shiftTime
@@ -198,15 +249,25 @@ const EmployeeTask = () => {
                               }}
                               onMouseEnter={() => {
                                 if (editingShift && editingShift.employeeId === employee) {
-                                  setEditingShift((prev) => {
-                                    if (!prev) return null;
+                                  // シフトの範囲内にいるか確認
+                                  if (
+                                    hour >= startHour &&
+                                    (hour < endHour ||
+                                      (hour === endHour && currentMinutes < endMinute))
+                                  ) {
+                                    setEditingShift((prev) => {
+                                      if (!prev) return null;
 
-                                    return {
-                                      employeeId: prev.employeeId,
-                                      startHour: prev.startHour,
-                                      endHour: hour.toString(),
-                                    };
-                                  });
+                                      return {
+                                        employeeId: prev.employeeId,
+                                        startHour: prev.startHour,
+                                        endHour: hour.toString(),
+                                      };
+                                    });
+                                  } else {
+                                    // シフトの範囲外にカーソルが移動した場合、編集を終了
+                                    setEditingShift(null);
+                                  }
                                 }
                               }}
                               onMouseUp={() => {
@@ -217,8 +278,10 @@ const EmployeeTask = () => {
                                   typeof editingShift.endHour === 'string' &&
                                   editingShift.endHour.trim() !== ''
                                 ) {
-                                  const newStartTime = editingShift.startHour;
-                                  const newEndTime = editingShift.endHour;
+                                  const newStartTime = formatTime(
+                                    parseFloat(editingShift.startHour)
+                                  );
+                                  const newEndTime = formatTime(parseFloat(editingShift.endHour));
 
                                   createFixedShift(
                                     employee,

@@ -1,8 +1,9 @@
 import type { DefineMethods } from 'aspida';
+import type { ShiftModel } from '../../commonTypesWithClient/models';
 
 export type Methods = DefineMethods<{
   get: {
-    resBody: string;
+    resBody: ShiftModel[];
   };
   post: {
     reqBody: {
