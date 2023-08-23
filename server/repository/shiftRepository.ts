@@ -74,3 +74,16 @@ export const getShift = async (myId: string): Promise<ShiftModel[]> => {
 
   return prismaTasks.map(toShiftModel);
 };
+
+export const getSubmitShift = async (): Promise<ShiftModel[]> => {
+  const prismaTasks = await prismaClient.shift.findMany({
+    select: {
+      id: true,
+      date: true,
+      starttime: true,
+      endtime: true,
+    },
+  });
+
+  return prismaTasks.map(toShiftModel);
+};

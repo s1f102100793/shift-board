@@ -1,28 +1,8 @@
+import type { ShiftModel } from 'commonTypesWithClient/models';
 import { useEffect, useState } from 'react';
+import { apiClient } from 'src/utils/apiClient';
+import { returnNull } from 'src/utils/returnNull';
 import styles from './EmployeeTask.module.css';
-
-const employees = [
-  '田中太郎',
-  '佐藤次郎',
-  '鈴木花子',
-  '山田一郎',
-  '木村太一',
-  '高橋雅子',
-  '中村翔太',
-  '小林悠',
-  '石田光',
-  '加藤あや',
-  '田中太郎',
-  '佐藤次郎',
-  '鈴木花子',
-  '山田一郎',
-  '木村太一',
-  '高橋雅子',
-  '中村翔太',
-  '小林悠',
-  '石田光',
-  '加藤あや',
-];
 
 const EmployeeTask = () => {
   const date = new Date();
@@ -32,20 +12,20 @@ const EmployeeTask = () => {
   const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<number | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [editingShift, setEditingShift] = useState<{
     employeeId: string;
-    startHour: number;
-    endHour?: number;
+    startHour: string;
+    endHour?: string;
   } | null>(null);
 
   const [draggingShift, setDraggingShift] = useState<{
     employeeId: string;
-    startHour: number;
-    endHour?: number;
+    startHour: string;
+    endHour?: string;
   } | null>(null);
 
-  const openModal = (day: number) => {
+  const openModal = (day: string) => {
     setSelectedDate(day);
     setIsModalOpen(true);
   };
@@ -54,27 +34,22 @@ const EmployeeTask = () => {
     setIsModalOpen(false);
   };
 
-  type Shift = {
-    id: string;
-    date: number;
-    startTime: string;
-    endTime: string;
+  const [shifts, setShifts] = useState<ShiftModel[]>([]);
+  const [employees, setEmployees] = useState<string[]>([]);
+
+  const fetchShift = async () => {
+    const fetchedShifts = await apiClient.shift.$get().catch(returnNull);
+    console.log(fetchedShifts);
+    if (fetchedShifts !== null && fetchedShifts !== undefined) {
+      setShifts(fetchedShifts);
+      const uniqueEmployeeIds = [...new Set(fetchedShifts.map((shift) => shift.id))];
+      setEmployees(uniqueEmployeeIds);
+    }
   };
 
-  const shifts: Shift[] = [
-    { id: '田中太郎', date: 1, startTime: '09:00', endTime: '18:00' },
-    { id: '佐藤次郎', date: 1, startTime: '10:00', endTime: '19:00' },
-    { id: '鈴木花子', date: 1, startTime: '11:00', endTime: '20:00' },
-    { id: '山田一郎', date: 2, startTime: '09:00', endTime: '18:00' },
-    { id: '木村太一', date: 2, startTime: '12:00', endTime: '21:00' },
-    { id: '高橋雅子', date: 3, startTime: '09:00', endTime: '18:00' },
-    { id: '中村翔太', date: 3, startTime: '10:00', endTime: '19:00' },
-    { id: '小林悠', date: 4, startTime: '11:00', endTime: '20:00' },
-    { id: '石田光', date: 4, startTime: '12:00', endTime: '21:00' },
-    { id: '加藤あや', date: 5, startTime: '09:00', endTime: '18:00' },
-    { id: '田中太郎', date: 5, startTime: '17:00', endTime: '22:30' },
-    // これを続けて、適当なデータで1ヵ月分のシフトを作成できます
-  ];
+  useEffect(() => {
+    fetchShift();
+  }, []);
 
   useEffect(() => {
     fetch('https://holidays-jp.github.io/api/v1/date.json')
@@ -126,7 +101,7 @@ const EmployeeTask = () => {
                 );
                 return (
                   <td key={day}>
-                    {shiftForDay ? `${shiftForDay.startTime} - ${shiftForDay.endTime}` : ''}
+                    {shiftForDay ? `${shiftForDay.starttime} - ${shiftForDay.endtime}` : ''}
                   </td>
                 );
               })}
