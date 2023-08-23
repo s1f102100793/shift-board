@@ -130,8 +130,10 @@ const EmployeeTask = () => {
                     <tr>
                       <th>名前</th>
                       {/* 10時から24時までを1時間ごとに表示 */}
-                      {Array.from({ length: 15 }, (_, i) => 10 + i).map((hour) => (
-                        <th key={hour}>{hour}:00</th>
+                      {Array.from({ length: 30 }, (_, i) => 10 + i * 0.5).map((hour) => (
+                        <th key={hour}>
+                          {Math.floor(hour)}:{hour % 1 === 0 ? '00' : '30'}
+                        </th>
                       ))}
                     </tr>
                   </thead>
@@ -139,13 +141,24 @@ const EmployeeTask = () => {
                     {employees.map((employee) => (
                       <tr key={employee}>
                         <td>{employee}</td>
-                        {Array.from({ length: 15 }, (_, i) => 10 + i).map((hour) => {
+                        {Array.from({ length: 30 }, (_, i) => 10 + i * 0.5).map((hour) => {
+                          const currentHour = Math.floor(hour);
+                          const currentMinutes = hour % 1 === 0 ? 0 : 30;
                           const shiftForDay = shifts.find(
                             (shift) => shift.id === employee && shift.date === selectedDate
                           );
-                          const [startHour] = shiftForDay?.starttime.split(':').map(Number) || [];
-                          const [endHour] = shiftForDay?.endtime.split(':').map(Number) || [];
-                          const isInShiftTime = startHour <= hour && hour < endHour;
+                          const [startHour, startMinute] = shiftForDay?.starttime
+                            .split(':')
+                            .map(Number) || [0, 0];
+                          const [endHour, endMinute] = shiftForDay?.endtime
+                            .split(':')
+                            .map(Number) || [0, 0];
+
+                          const isInShiftTime =
+                            (startHour < currentHour ||
+                              (startHour === currentHour && startMinute <= currentMinutes)) &&
+                            (endHour > currentHour ||
+                              (endHour === currentHour && endMinute > currentMinutes));
                           return (
                             <td
                               key={hour}
