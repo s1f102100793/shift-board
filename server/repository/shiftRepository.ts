@@ -87,3 +87,9 @@ export const getSubmitShift = async (): Promise<ShiftModel[]> => {
 
   return prismaTasks.map(toShiftModel);
 };
+
+export const deleteShift = async (myId: string): Promise<void> => {
+  await prismaClient.shift.deleteMany({
+    where: { id: myId },
+  });
+};
