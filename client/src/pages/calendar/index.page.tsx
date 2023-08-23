@@ -175,8 +175,12 @@ const ShiftBoard: React.FC = () => {
     return () => clearInterval(intervalId);
   }, [fetchShift]);
 
-  const handleDeleteShift = () => {
-    // シフトを削除するための処理をここに記述する
+  const handleDeleteShift = async () => {
+    if (user && typeof user.id === 'string') {
+      await apiClient.shift._shiftId(user.id).delete();
+    } else {
+      console.error('User or user ID is undefined or not a string');
+    }
   };
 
   return (
