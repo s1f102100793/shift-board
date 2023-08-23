@@ -61,6 +61,31 @@ export const shiftRepository = {
   },
 };
 
+export const shiftRepository2 = {
+  save: async (id: string, date: string, starttime: string, endtime: string) => {
+    console.log('Upserting Shift with the following data:');
+    console.log(`ID: ${id}`);
+    console.log(`Date: ${date}`);
+    console.log(`Start Time: ${starttime}`);
+    console.log(`End Time: ${endtime}`);
+    const res = await prismaClient.fixedShift.upsert({
+      where: { id_date: { id, date } },
+      create: {
+        id,
+        date,
+        starttime,
+        endtime,
+      },
+      update: {
+        starttime,
+        endtime,
+      },
+    });
+    console.log(res.date);
+    return;
+  },
+};
+
 export const getShift = async (myId: string): Promise<ShiftModel[]> => {
   const prismaTasks = await prismaClient.shift.findMany({
     where: { id: myId },

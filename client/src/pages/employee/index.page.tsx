@@ -41,13 +41,20 @@ const EmployeeTask = () => {
     }
   };
 
-  const updateShiftInDatabase = async (
+  const createFixedShift = async (
     employeeId: string,
     date: string,
     newStartTime: string,
     newEndTime: string
   ) => {
-    //
+    await apiClient.fixedshift.post({
+      body: {
+        id: employeeId,
+        date,
+        starttime: newStartTime,
+        endtime: newEndTime,
+      },
+    });
   };
 
   useEffect(() => {
@@ -210,11 +217,10 @@ const EmployeeTask = () => {
                                   typeof editingShift.endHour === 'string' &&
                                   editingShift.endHour.trim() !== ''
                                 ) {
-                                  // startTimeとendTimeを更新する処理を追加する
                                   const newStartTime = editingShift.startHour;
                                   const newEndTime = editingShift.endHour;
 
-                                  updateShiftInDatabase(
+                                  createFixedShift(
                                     employee,
                                     selectedDate,
                                     newStartTime,

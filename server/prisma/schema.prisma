@@ -22,3 +22,12 @@ model Shift {
 
   @@id([id, date])
 }
+
+model FixedShift {
+  id        String
+  date      String
+  starttime String
+  endtime   String
+
+  @@id([id, date])
+}
