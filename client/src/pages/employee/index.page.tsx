@@ -74,6 +74,7 @@ const EmployeeTask = () => {
       clearInterval(intervalId);
     };
   }, []);
+
   useEffect(() => {
     fetch('https://holidays-jp.github.io/api/v1/date.json')
       .then((res) => res.json())
@@ -84,6 +85,12 @@ const EmployeeTask = () => {
         console.error('Failed to fetch holidays:', error);
       });
   }, []);
+
+  const formatTime = (hourFloat: number) => {
+    const hours = Math.floor(hourFloat);
+    const minutes = hourFloat % 1 === 0.5 ? 30 : 0;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+  };
 
   return (
     <div className={styles.container}>
@@ -230,15 +237,25 @@ const EmployeeTask = () => {
                               }}
                               onMouseEnter={() => {
                                 if (editingShift && editingShift.employeeId === employee) {
-                                  setEditingShift((prev) => {
-                                    if (!prev) return null;
+                                  // シフトの範囲内にいるか確認
+                                  if (
+                                    hour >= startHour &&
+                                    (hour < endHour ||
+                                      (hour === endHour && currentMinutes < endMinute))
+                                  ) {
+                                    setEditingShift((prev) => {
+                                      if (!prev) return null;
 
-                                    return {
-                                      employeeId: prev.employeeId,
-                                      startHour: prev.startHour,
-                                      endHour: hour.toString(),
-                                    };
-                                  });
+                                      return {
+                                        employeeId: prev.employeeId,
+                                        startHour: prev.startHour,
+                                        endHour: hour.toString(),
+                                      };
+                                    });
+                                  } else {
+                                    // シフトの範囲外にカーソルが移動した場合、編集を終了
+                                    setEditingShift(null);
+                                  }
                                 }
                               }}
                               onMouseUp={() => {
@@ -249,8 +266,10 @@ const EmployeeTask = () => {
                                   typeof editingShift.endHour === 'string' &&
                                   editingShift.endHour.trim() !== ''
                                 ) {
-                                  const newStartTime = editingShift.startHour;
-                                  const newEndTime = editingShift.endHour;
+                                  const newStartTime = formatTime(
+                                    parseFloat(editingShift.startHour)
+                                  );
+                                  const newEndTime = formatTime(parseFloat(editingShift.endHour));
 
                                   createFixedShift(
                                     employee,

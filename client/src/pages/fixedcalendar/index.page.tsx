@@ -14,7 +14,7 @@ const FixedCalendar = () => {
   const [employees, setEmployees] = useState<string[]>([]);
 
   const fetchShift = async () => {
-    const fetchedShifts = await apiClient.shift.$get().catch(returnNull);
+    const fetchedShifts = await apiClient.fixedshift.$get().catch(returnNull);
     console.log(fetchedShifts);
     if (fetchedShifts !== null && fetchedShifts !== undefined) {
       setShifts(fetchedShifts);
@@ -24,7 +24,12 @@ const FixedCalendar = () => {
   };
 
   useEffect(() => {
-    fetchShift();
+    const intervalId = setInterval(() => {
+      fetchShift();
+    }, 100);
+    return () => {
+      clearInterval(intervalId);
+    };
   }, []);
 
   useEffect(() => {
