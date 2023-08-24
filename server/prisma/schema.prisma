@@ -23,7 +23,7 @@ model Shift {
   @@id([id, date])
 }
 
-model FixedShift {
+model Fixedshift {
   id        String
   date      String
   starttime String
