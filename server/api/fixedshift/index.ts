@@ -1,5 +1,5 @@
-import type { HogeId } from '$/commonTypesWithClient/branded';
 import type { DefineMethods } from 'aspida';
+import type { HogeId } from '../../commonTypesWithClient/branded';
 import type { ShiftModel } from '../../commonTypesWithClient/models';
 
 export type Methods = DefineMethods<{
