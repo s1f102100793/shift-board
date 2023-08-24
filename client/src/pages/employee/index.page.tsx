@@ -145,37 +145,32 @@ const EmployeeTask = () => {
                   (shift) => shift.id === employee && shift.date === day.toString()
                 );
 
-                let displayShift;
-                if (fixedShiftForDay) {
-                  displayShift = (
-                    <span
-                      className={`${styles.redText} ${styles.clickableRedText}`}
-                      onClick={() => {
-                        if (window.confirm('この確定シフトを取り消しますか？')) {
-                          deleteFixedShift(employee, day.toString());
-                        }
-                      }}
-                    >
-                      {`${fixedShiftForDay.starttime} - ${fixedShiftForDay.endtime}`}
-                    </span>
-                  );
-                } else if (shiftForDay) {
-                  displayShift = (
-                    <span
-                      onClick={async () => {
-                        await createFixedShift(
-                          employee,
-                          day.toString(),
-                          shiftForDay.starttime,
-                          shiftForDay.endtime
-                        );
-                        // 必要に応じて、シフト情報の再取得やUIの更新を行う
-                      }}
-                    >
-                      {`${shiftForDay.starttime} - ${shiftForDay.endtime}`}
-                    </span>
-                  );
-                }
+                const displayShift = fixedShiftForDay ? (
+                  <span
+                    className={`${styles.redText} ${styles.clickableRedText}`}
+                    onClick={() => {
+                      if (window.confirm('この確定シフトを取り消しますか？')) {
+                        deleteFixedShift(employee, day.toString());
+                      }
+                    }}
+                  >
+                    {`${fixedShiftForDay.starttime} - ${fixedShiftForDay.endtime}`}
+                  </span>
+                ) : shiftForDay ? (
+                  <span
+                    onClick={async () => {
+                      await createFixedShift(
+                        employee,
+                        day.toString(),
+                        shiftForDay.starttime,
+                        shiftForDay.endtime
+                      );
+                      // 必要に応じて、シフト情報の再取得やUIの更新を行う
+                    }}
+                  >
+                    {`${shiftForDay.starttime} - ${shiftForDay.endtime}`}
+                  </span>
+                ) : null;
 
                 return <td key={day}>{displayShift}</td>;
               })}
