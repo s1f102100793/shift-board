@@ -1,6 +1,8 @@
 import type { EmployeeId } from 'commonTypesWithClient/branded';
 import type { ShiftModel } from 'commonTypesWithClient/models';
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { pagesPath } from 'src/utils/$path';
 import { apiClient } from 'src/utils/apiClient';
 import { returnNull } from 'src/utils/returnNull';
 import styles from './EmployeeTask.module.css';
@@ -106,6 +108,22 @@ const EmployeeTask = () => {
 
   return (
     <div className={styles.container}>
+      <header className={styles.header}>
+        <div className={styles.logoContainer}>
+          <h1 className={styles.logo}>シフトボード</h1>
+        </div>
+
+        <nav className={styles.nav}>
+          <Link href={pagesPath.$url()} className={styles.navItem}>
+            ホーム
+          </Link>
+        </nav>
+
+        <div className={styles.viewOptions}>
+          <button className={styles.viewButton}>週表示</button>
+          <button className={styles.viewButton}>月表示</button>
+        </div>
+      </header>
       <table className={styles.table}>
         <thead>
           <tr>
