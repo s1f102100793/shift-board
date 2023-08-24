@@ -35,7 +35,7 @@ const EmployeeTask = () => {
 
   const fetchShift = async () => {
     const fetchedShifts = await apiClient.shift.$get().catch(returnNull);
-    console.log(fetchedShifts);
+    // console.log(fetchedShifts);
     if (fetchedShifts !== null && fetchedShifts !== undefined) {
       setShifts(fetchedShifts);
       const uniqueEmployeeIds = [...new Set(fetchedShifts.map((shift) => shift.id))];
@@ -67,6 +67,7 @@ const EmployeeTask = () => {
   };
 
   const deleteFixedShift = async (employeeId: string, date: string) => {
+    // console.log(employeeId, date)
     await apiClient.fixedshift.delete({
       body: {
         id: employeeId,
