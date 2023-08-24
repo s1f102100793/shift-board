@@ -7,4 +7,4 @@ export const userIdParser = createIdParser<UserId>();
 
 export const taskIdParser = createIdParser<TaskId>();
 
-export const EmployeeIdParser = createIdParser<EmployeeId>();
+export const employeeIdParser = createIdParser<EmployeeId>();
