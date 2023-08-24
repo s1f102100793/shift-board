@@ -1,4 +1,4 @@
-import type { TaskId, UserId } from './branded';
+import type { EmployeeId, TaskId, UserId } from './branded';
 
 export type UserModel = {
   id: UserId;
@@ -15,7 +15,7 @@ export type TaskModel = {
 };
 
 export type ShiftModel = {
-  id: string;
+  id: EmployeeId;
   date: string;
   starttime: string;
   endtime: string;

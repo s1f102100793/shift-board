@@ -1,4 +1,4 @@
-import type { HogeId } from 'commonTypesWithClient/branded';
+import type { EmployeeId } from 'commonTypesWithClient/branded';
 import type { ShiftModel } from 'commonTypesWithClient/models';
 import { useEffect, useState } from 'react';
 import { apiClient } from 'src/utils/apiClient';
@@ -15,7 +15,7 @@ const EmployeeTask = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [editingShift, setEditingShift] = useState<{
-    employeeId: string;
+    employeeId: EmployeeId;
     startHour: string;
     endHour?: string;
     editingEnd?: boolean;
@@ -32,7 +32,7 @@ const EmployeeTask = () => {
 
   const [shifts, setShifts] = useState<ShiftModel[]>([]);
   const [fixedShifts, setFixedShifts] = useState<ShiftModel[]>([]);
-  const [employees, setEmployees] = useState<string[]>([]);
+  const [employees, setEmployees] = useState<EmployeeId[]>([]);
 
   const fetchShift = async () => {
     const fetchedShifts = await apiClient.shift.$get().catch(returnNull);
@@ -52,14 +52,14 @@ const EmployeeTask = () => {
   };
 
   const createFixedShift = async (
-    employeeId: string,
+    employeeId: EmployeeId,
     date: string,
     newStartTime: string,
     newEndTime: string
   ) => {
     await apiClient.fixedshift.post({
       body: {
-        id: employeeId as HogeId,
+        id: employeeId,
         date,
         starttime: newStartTime,
         endtime: newEndTime,
@@ -67,11 +67,11 @@ const EmployeeTask = () => {
     });
   };
 
-  const deleteFixedShift = async (employeeId: string, date: string) => {
+  const deleteFixedShift = async (employeeId: EmployeeId, date: string) => {
     // console.log(employeeId, date)
     await apiClient.fixedshift.delete({
       body: {
-        id: employeeId as HogeId,
+        id: employeeId,
         date,
       },
     });
