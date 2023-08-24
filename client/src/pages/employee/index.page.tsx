@@ -17,6 +17,7 @@ const EmployeeTask = () => {
     employeeId: string;
     startHour: string;
     endHour?: string;
+    editingEnd?: boolean;
   } | null>(null);
 
   const openModal = (day: string) => {
@@ -245,15 +246,66 @@ const EmployeeTask = () => {
                                     employeeId: employee,
                                     startHour: hour.toString(),
                                   });
+                                  //     // シフトの開始時刻をクリックした場合
+                                  //     if (hour === startHour) {
+                                  //       setEditingShift({
+                                  //         employeeId: employee,
+                                  //         startHour: hour.toString(),
+                                  //         editingEnd: false, // startHourを編集中であることを示す
+                                  //       });
+                                  //     }
+                                  //     // シフトの終了時刻をクリックした場合
+                                  //     else if (hour === endHour) {
+                                  //       setEditingShift({
+                                  //         employeeId: employee,
+                                  //         startHour: startHour.toString(),
+                                  //         endHour: hour.toString(),
+                                  //         editingEnd: true, // endHourを編集中であることを示す
+                                  //       });
+                                  //     }
+                                  //     // シフトの間をクリックした場合（現在の動作と同じ）
+                                  //     else {
+                                  //       setEditingShift({
+                                  //         employeeId: employee,
+                                  //         startHour: hour.toString(),
+                                  //       });
+                                  //     }
+                                  //   }
+                                  // }}
                                 }
                               }}
                               onMouseEnter={() => {
                                 if (editingShift && editingShift.employeeId === employee) {
-                                  // シフトの範囲内にいるか確認
                                   if (
                                     hour >= startHour &&
                                     (hour < endHour ||
                                       (hour === endHour && currentMinutes < endMinute))
+                                    // // シフトの終了時刻を編集中
+                                    // if (editingShift.editingEnd === true) {
+                                    //   // クリックした時間が現在の開始時刻より後である場合
+                                    //   if (hour >= parseInt(editingShift.startHour, 10)) {
+                                    //     setEditingShift((prev) => {
+                                    //       if (!prev) return null;
+
+                                    //       return {
+                                    //         ...prev,
+                                    //         endHour: hour.toString(),
+                                    //       };
+                                    //     });
+                                    //   } else {
+                                    //     // シフトの範囲外にカーソルが移動した場合、編集を終了
+                                    //     setEditingShift(null);
+                                    //   }
+                                    // }
+                                    // // シフトの開始時刻を編集中
+
+                                    // // クリックした時間が現在の終了時刻より前である場合
+                                    // else if (
+                                    //   typeof editingShift.endHour === 'string'
+                                    //     ? hour <= parseInt(editingShift.endHour, 10)
+                                    //     : true
+
+                                    // 固定
                                   ) {
                                     setEditingShift((prev) => {
                                       if (!prev) return null;
@@ -262,6 +314,8 @@ const EmployeeTask = () => {
                                         employeeId: prev.employeeId,
                                         startHour: prev.startHour,
                                         endHour: hour.toString(),
+                                        // ...prev,
+                                        // startHour: hour.toString(),
                                       };
                                     });
                                   } else {
