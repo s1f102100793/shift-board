@@ -143,7 +143,21 @@ const EmployeeTask = () => {
                     >{`${fixedShiftForDay.starttime} - ${fixedShiftForDay.endtime}`}</span>
                   );
                 } else if (shiftForDay) {
-                  displayShift = `${shiftForDay.starttime} - ${shiftForDay.endtime}`;
+                  displayShift = (
+                    <span
+                      onClick={async () => {
+                        await createFixedShift(
+                          employee,
+                          day.toString(),
+                          shiftForDay.starttime,
+                          shiftForDay.endtime
+                        );
+                        // 必要に応じて、シフト情報の再取得やUIの更新を行う
+                      }}
+                    >
+                      {`${shiftForDay.starttime} - ${shiftForDay.endtime}`}
+                    </span>
+                  );
                 }
 
                 return <td key={day}>{displayShift}</td>;
