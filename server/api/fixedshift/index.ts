@@ -1,3 +1,4 @@
+import type { HogeId } from '$/commonTypesWithClient/branded';
 import type { DefineMethods } from 'aspida';
 import type { ShiftModel } from '../../commonTypesWithClient/models';
 
@@ -7,7 +8,7 @@ export type Methods = DefineMethods<{
   };
   post: {
     reqBody: {
-      id: string;
+      id: HogeId;
       date: string;
       starttime: string;
       endtime: string;
@@ -15,7 +16,7 @@ export type Methods = DefineMethods<{
   };
   delete: {
     reqBody: {
-      id: string;
+      id: HogeId;
       date: string;
     };
   };
