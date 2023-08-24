@@ -4,8 +4,10 @@ import { TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 // import { IconClock } from '@tabler/icons-react';
 import { useAtom } from 'jotai';
+import Link from 'next/link';
 import React, { useCallback, useEffect, useState } from 'react';
 import { userAtom } from 'src/atoms/user';
+import { pagesPath } from 'src/utils/$path';
 import { apiClient } from 'src/utils/apiClient';
 import { returnNull } from 'src/utils/returnNull';
 import styles from './ShiftBoard.module.css';
@@ -207,6 +209,19 @@ const ShiftBoard: React.FC = () => {
 
   return (
     <div className={styles.container}>
+      <header className={styles.header}>
+        <div className={styles.logoContainer}>
+          <h1 className={styles.logo}>シフトボード</h1>
+        </div>
+        <nav className={styles.nav}>
+          <Link href={pagesPath.$url()} className={styles.navItem}>
+            ホーム
+          </Link>
+          <Link href={pagesPath.fixedcalendar.$url()} className={styles.navItem}>
+            カレンダー
+          </Link>
+        </nav>
+      </header>
       {/* Upper Half: Calendar */}
       <div className={styles.calendarSection}>
         <div className={styles.monthNavigation}>
