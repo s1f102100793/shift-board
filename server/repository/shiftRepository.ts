@@ -101,7 +101,7 @@ export const getShift = async (myId: string): Promise<ShiftModel[]> => {
 };
 
 export const getFixedShiftOnlyId = async (myId: string): Promise<ShiftModel[]> => {
-  const prismaTasks = await prismaClient.shift.findMany({
+  const prismaTasks = await prismaClient.fixedshift.findMany({
     where: { id: myId },
     select: {
       id: true,
