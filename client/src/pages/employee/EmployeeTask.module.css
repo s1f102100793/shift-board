@@ -86,3 +86,7 @@
 .redText {
   color: red;
 }
+
+.clickableRedText {
+  cursor: pointer;
+}

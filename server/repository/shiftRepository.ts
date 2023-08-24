@@ -145,3 +145,9 @@ export const deleteShift = async (myId: string): Promise<void> => {
     where: { id: myId },
   });
 };
+
+export const deleteFixedShift = async (myId: string, date: string): Promise<void> => {
+  await prismaClient.shift.deleteMany({
+    where: { id: myId, date },
+  });
+};

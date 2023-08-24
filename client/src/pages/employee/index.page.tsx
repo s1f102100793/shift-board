@@ -66,6 +66,15 @@ const EmployeeTask = () => {
     });
   };
 
+  const deleteFixedShift = async (employeeId: string, date: string) => {
+    await apiClient.fixedshift.delete({
+      body: {
+        id: employeeId,
+        date,
+      },
+    });
+  };
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       fetchShift();
@@ -139,8 +148,15 @@ const EmployeeTask = () => {
                 if (fixedShiftForDay) {
                   displayShift = (
                     <span
-                      className={styles.redText}
-                    >{`${fixedShiftForDay.starttime} - ${fixedShiftForDay.endtime}`}</span>
+                      className={`${styles.redText} ${styles.clickableRedText}`}
+                      onClick={() => {
+                        if (window.confirm('この確定シフトを取り消しますか？')) {
+                          deleteFixedShift(employee, day.toString());
+                        }
+                      }}
+                    >
+                      {`${fixedShiftForDay.starttime} - ${fixedShiftForDay.endtime}`}
+                    </span>
                   );
                 } else if (shiftForDay) {
                   displayShift = (

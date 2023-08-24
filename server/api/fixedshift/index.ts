@@ -13,4 +13,10 @@ export type Methods = DefineMethods<{
       endtime: string;
     };
   };
+  delete: {
+    reqBody: {
+      id: string;
+      date: string;
+    };
+  };
 }>;
