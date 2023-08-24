@@ -6,4 +6,4 @@ export type UserId = Branded<'UserId'>;
 
 export type TaskId = Branded<'TaskId'>;
 
-export type EmployeeId = Branded<'HogeId'>;
+export type EmployeeId = Branded<'EmployeeId'>;

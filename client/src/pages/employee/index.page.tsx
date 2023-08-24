@@ -1,8 +1,8 @@
-import type { EmployeeId } from 'commonTypesWithClient/branded';
 import type { ShiftModel } from 'commonTypesWithClient/models';
 import { useEffect, useState } from 'react';
 import { apiClient } from 'src/utils/apiClient';
 import { returnNull } from 'src/utils/returnNull';
+import { EmployeeIdParser } from '../../../../server/service/idParsers';
 import styles from './EmployeeTask.module.css';
 
 const EmployeeTask = () => {
@@ -59,7 +59,7 @@ const EmployeeTask = () => {
   ) => {
     await apiClient.fixedshift.post({
       body: {
-        id: employeeId as EmployeeId,
+        id: EmployeeIdParser.parse(employeeId),
         date,
         starttime: newStartTime,
         endtime: newEndTime,
@@ -71,7 +71,7 @@ const EmployeeTask = () => {
     // console.log(employeeId, date)
     await apiClient.fixedshift.delete({
       body: {
-        id: employeeId as EmployeeId,
+        id: EmployeeIdParser.parse(employeeId),
         date,
       },
     });
