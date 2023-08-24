@@ -1,4 +1,4 @@
-import { getFixedShift, shiftRepository2 } from '$/repository/shiftRepository';
+import { deleteFixedShift, getFixedShift, shiftRepository2 } from '$/repository/shiftRepository';
 import { defineController } from './$relay';
 
 export default defineController(() => ({
@@ -7,4 +7,8 @@ export default defineController(() => ({
     status: 201,
     body: await shiftRepository2.save(body.id, body.date, body.starttime, body.endtime),
   }),
+  delete: async ({ body }) => {
+    await deleteFixedShift(body.id, body.date);
+    return { status: 204 };
+  },
 }));

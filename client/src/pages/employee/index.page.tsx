@@ -1,3 +1,4 @@
+import type { HogeId } from 'commonTypesWithClient/branded';
 import type { ShiftModel } from 'commonTypesWithClient/models';
 import { useEffect, useState } from 'react';
 import { apiClient } from 'src/utils/apiClient';
@@ -35,7 +36,7 @@ const EmployeeTask = () => {
 
   const fetchShift = async () => {
     const fetchedShifts = await apiClient.shift.$get().catch(returnNull);
-    console.log(fetchedShifts);
+    // console.log(fetchedShifts);
     if (fetchedShifts !== null && fetchedShifts !== undefined) {
       setShifts(fetchedShifts);
       const uniqueEmployeeIds = [...new Set(fetchedShifts.map((shift) => shift.id))];
@@ -58,10 +59,20 @@ const EmployeeTask = () => {
   ) => {
     await apiClient.fixedshift.post({
       body: {
-        id: employeeId,
+        id: employeeId as HogeId,
         date,
         starttime: newStartTime,
         endtime: newEndTime,
+      },
+    });
+  };
+
+  const deleteFixedShift = async (employeeId: string, date: string) => {
+    // console.log(employeeId, date)
+    await apiClient.fixedshift.delete({
+      body: {
+        id: employeeId as HogeId,
+        date,
       },
     });
   };
@@ -135,16 +146,32 @@ const EmployeeTask = () => {
                   (shift) => shift.id === employee && shift.date === day.toString()
                 );
 
-                let displayShift;
-                if (fixedShiftForDay) {
-                  displayShift = (
-                    <span
-                      className={styles.redText}
-                    >{`${fixedShiftForDay.starttime} - ${fixedShiftForDay.endtime}`}</span>
-                  );
-                } else if (shiftForDay) {
-                  displayShift = `${shiftForDay.starttime} - ${shiftForDay.endtime}`;
-                }
+                const displayShift = fixedShiftForDay ? (
+                  <span
+                    className={`${styles.redText} ${styles.clickableRedText}`}
+                    onClick={() => {
+                      if (window.confirm('この確定シフトを取り消しますか？')) {
+                        deleteFixedShift(employee, day.toString());
+                      }
+                    }}
+                  >
+                    {`${fixedShiftForDay.starttime} - ${fixedShiftForDay.endtime}`}
+                  </span>
+                ) : shiftForDay ? (
+                  <span
+                    onClick={async () => {
+                      await createFixedShift(
+                        employee,
+                        day.toString(),
+                        shiftForDay.starttime,
+                        shiftForDay.endtime
+                      );
+                      // 必要に応じて、シフト情報の再取得やUIの更新を行う
+                    }}
+                  >
+                    {`${shiftForDay.starttime} - ${shiftForDay.endtime}`}
+                  </span>
+                ) : null;
 
                 return <td key={day}>{displayShift}</td>;
               })}

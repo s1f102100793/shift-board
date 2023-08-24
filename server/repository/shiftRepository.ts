@@ -16,7 +16,6 @@ export const createShift = async (
   starttime: ShiftModel['starttime'],
   endtime: ShiftModel['endtime']
 ): Promise<ShiftModel> => {
-  console.log('来ている');
   const prismaShift = await prismaClient.shift.create({
     data: { id, date, starttime, endtime },
   });
@@ -38,11 +37,6 @@ export const createShift = async (
 
 export const shiftRepository = {
   save: async (id: string, date: string, starttime: string, endtime: string) => {
-    console.log('Upserting Shift with the following data:');
-    console.log(`ID: ${id}`);
-    console.log(`Date: ${date}`);
-    console.log(`Start Time: ${starttime}`);
-    console.log(`End Time: ${endtime}`);
     const res = await prismaClient.shift.upsert({
       where: { id_date: { id, date } },
       create: {
@@ -63,11 +57,6 @@ export const shiftRepository = {
 
 export const shiftRepository2 = {
   save: async (id: string, date: string, starttime: string, endtime: string) => {
-    console.log('Upserting Shift with the following data:');
-    console.log(`ID: ${id}`);
-    console.log(`Date: ${date}`);
-    console.log(`Start Time: ${starttime}`);
-    console.log(`End Time: ${endtime}`);
     const res = await prismaClient.fixedshift.upsert({
       where: { id_date: { id, date } },
       create: {
@@ -143,5 +132,11 @@ export const getFixedShift = async (): Promise<ShiftModel[]> => {
 export const deleteShift = async (myId: string): Promise<void> => {
   await prismaClient.shift.deleteMany({
     where: { id: myId },
+  });
+};
+
+export const deleteFixedShift = async (myId: string, date: string): Promise<void> => {
+  await prismaClient.fixedshift.deleteMany({
+    where: { id: myId, date },
   });
 };
