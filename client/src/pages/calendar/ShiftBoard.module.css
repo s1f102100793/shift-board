@@ -226,7 +226,9 @@
 .closeButtonContainer {
   position: absolute; /* 絶対位置指定 */
   top: 10px; /* 上からの位置を指定 */
-  left: 10px; /* 左からの位置を指定 */
+  right: 10px; /* 左からの位置を指定 */
+  width: 80px;
+  height: 50px;
 }
 
 .autocompleteContainer > :first-child {

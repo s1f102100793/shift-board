@@ -190,7 +190,11 @@ const ShiftBoard: React.FC = () => {
     fetchShift();
     fetchFixedShift();
     const intervalId = setInterval(fetchShift, 100);
-    return () => clearInterval(intervalId);
+    const intervalNewId = setInterval(fetchFixedShift, 100);
+    return () => {
+      clearInterval(intervalId);
+      clearInterval(intervalNewId);
+    };
   }, [fetchShift, fetchFixedShift]);
 
   const handleDeleteShift = async () => {
@@ -274,7 +278,9 @@ const ShiftBoard: React.FC = () => {
         </button>
         <div className={`${styles.shiftBar} ${showShiftBar ? styles.shiftBarVisible : ''}`}>
           <div className={styles.closeButtonContainer}>
-            <button onClick={() => setShowShiftBar(false)}>閉じる</button>
+            <button className={styles.clearButton} onClick={() => setShowShiftBar(false)}>
+              閉じる
+            </button>
           </div>
           <div className="autocompleteContainer">
             <div className={styles.timespace}>
