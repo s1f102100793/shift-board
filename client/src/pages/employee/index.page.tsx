@@ -1,4 +1,4 @@
-import type { HogeId } from 'commonTypesWithClient/branded';
+import type { EmployeeId } from 'commonTypesWithClient/branded';
 import type { ShiftModel } from 'commonTypesWithClient/models';
 import { useEffect, useState } from 'react';
 import { apiClient } from 'src/utils/apiClient';
@@ -59,7 +59,7 @@ const EmployeeTask = () => {
   ) => {
     await apiClient.fixedshift.post({
       body: {
-        id: employeeId as HogeId,
+        id: employeeId as EmployeeId,
         date,
         starttime: newStartTime,
         endtime: newEndTime,
@@ -71,7 +71,7 @@ const EmployeeTask = () => {
     // console.log(employeeId, date)
     await apiClient.fixedshift.delete({
       body: {
-        id: employeeId as HogeId,
+        id: employeeId as EmployeeId,
         date,
       },
     });
