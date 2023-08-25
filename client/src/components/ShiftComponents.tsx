@@ -95,3 +95,57 @@ export const ShiftButtons: React.FC<ShiftButtonsProps> = ({ onCreateShift, onDel
     </button>
   </div>
 );
+
+type MonthNavigationProps = {
+  selectedMonth: number;
+  selectedYear: number;
+  onNavigate: (direction: number) => void;
+};
+
+export const MonthNavigation: React.FC<MonthNavigationProps> = ({
+  selectedMonth,
+  selectedYear,
+  onNavigate,
+}) => {
+  const { MONTHS } = useDays();
+  return (
+    <div className={styles.monthNavigation}>
+      <button className={styles.navButton} onClick={() => onNavigate(-1)}>
+        ＜
+      </button>
+      <span>
+        {MONTHS[selectedMonth]} {selectedYear}
+      </span>
+      <button className={styles.navButton} onClick={() => onNavigate(1)}>
+        ＞
+      </button>
+    </div>
+  );
+};
+
+type DayLabelProps = {
+  day: string;
+};
+
+export const DayLabel: React.FC<DayLabelProps> = ({ day }) => (
+  <div className={`${styles.calendarDay} ${styles.dayLabel}`}>{day}</div>
+);
+
+type CalendarDayProps = {
+  day: number | null;
+  className: string;
+  onClick: (day: number) => void;
+};
+
+export const CalendarDay: React.FC<CalendarDayProps> = ({ day, className, onClick }) => (
+  <div
+    className={className}
+    onClick={() => {
+      if (day !== null) {
+        onClick(day);
+      }
+    }}
+  >
+    {day}
+  </div>
+);

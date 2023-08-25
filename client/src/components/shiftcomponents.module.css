@@ -106,3 +106,38 @@
   border: none;
   cursor: pointer;
 }
+
+.monthNavigation {
+  display: flex;
+  align-items: center;
+}
+
+.navButton {
+  background: #eee;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin: 0 12px;
+}
+
+.calendarDay {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.calendarDay:hover {
+  background-color: rgba(0, 123, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.dayLabel {
+  flex: 1;
+  text-align: center;
+  padding: 5px;
+  background-color: #eee;
+}

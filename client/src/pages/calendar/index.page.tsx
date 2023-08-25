@@ -3,8 +3,11 @@ import React, { useEffect, useState } from 'react';
 import {
   AddButton,
   AutoCompleteField,
+  CalendarDay,
   ClearButtonContainer,
   CloseButton,
+  DayLabel,
+  MonthNavigation,
   SelectedDaysSection,
   ShiftButtons,
 } from 'src/components/ShiftComponents';
@@ -22,7 +25,6 @@ function getFirstDayOfMonth(month: number, year: number) {
 
 const ShiftBoard: React.FC = () => {
   const {
-    MONTHS,
     DAYS_OF_WEEK,
     now,
     today,
@@ -142,39 +144,23 @@ const ShiftBoard: React.FC = () => {
         </nav>
       </header>
       <div className={styles.calendarSection}>
-        <div className={styles.monthNavigation}>
-          <button className={styles.navButton} onClick={() => navigateMonth(-1)}>
-            ＜
-          </button>
-          <span>
-            {MONTHS[selectedMonth]} {selectedYear}
-          </span>
-          <button className={styles.navButton} onClick={() => navigateMonth(1)}>
-            ＞
-          </button>
-        </div>
-
+        <MonthNavigation
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
+          onNavigate={navigateMonth}
+        />
         <div className={styles.calendarGrid}>
           {DAYS_OF_WEEK.map((day) => (
-            <div key={day} className={`${styles.calendarDay} ${styles.dayLabel}`}>
-              {day}
-            </div>
+            <DayLabel key={day} day={day} />
           ))}
-          {calendarData.map((day, index) => {
-            return (
-              <div
-                key={index}
-                className={getDayClassNames(day, index)}
-                onClick={() => {
-                  if (day !== null) {
-                    handleDayClick(day);
-                  }
-                }}
-              >
-                {day}
-              </div>
-            );
-          })}
+          {calendarData.map((day, index) => (
+            <CalendarDay
+              key={index}
+              day={day}
+              className={getDayClassNames(day, index)}
+              onClick={handleDayClick}
+            />
+          ))}
         </div>
       </div>
       <div className={styles.shiftInputSection}>
