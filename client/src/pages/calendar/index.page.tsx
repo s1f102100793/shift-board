@@ -4,7 +4,6 @@ import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { useDays } from 'src/hooks/useDays';
 import { pagesPath } from 'src/utils/$path';
-import { apiClient } from 'src/utils/apiClient';
 import styles from './ShiftBoard.module.css';
 
 function getDaysInMonth(month: number, year: number) {
@@ -21,7 +20,6 @@ const ShiftBoard: React.FC = () => {
     DAYS_OF_WEEK,
     now,
     today,
-    user,
     showShiftBar,
     setShowShiftBar,
     selectedDays,
@@ -36,6 +34,7 @@ const ShiftBoard: React.FC = () => {
     createShift,
     fetchShift,
     fetchFixedShift,
+    handleDeleteShift,
   } = useDays();
 
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
@@ -99,14 +98,6 @@ const ShiftBoard: React.FC = () => {
       clearInterval(intervalNewId);
     };
   }, [fetchShift, fetchFixedShift]);
-
-  const handleDeleteShift = async () => {
-    if (user && typeof user.id === 'string') {
-      await apiClient.shift._shiftId(user.id).delete();
-    } else {
-      console.error('User or user ID is undefined or not a string');
-    }
-  };
 
   return (
     <div className={styles.container}>

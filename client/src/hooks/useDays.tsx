@@ -124,12 +124,19 @@ export const useDays = () => {
     }
   }, [user, setShifts]);
 
+  const handleDeleteShift = async () => {
+    if (user && typeof user.id === 'string') {
+      await apiClient.shift._shiftId(user.id).delete();
+    } else {
+      console.error('User or user ID is undefined or not a string');
+    }
+  };
+
   return {
     MONTHS,
     DAYS_OF_WEEK,
     now,
     today,
-    user,
     showShiftBar,
     setShowShiftBar,
     selectedDays,
@@ -144,5 +151,6 @@ export const useDays = () => {
     createShift,
     fetchShift,
     fetchFixedShift,
+    handleDeleteShift,
   };
 };
