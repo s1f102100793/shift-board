@@ -62,3 +62,47 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.closeButtonContainer {
+  position: absolute; /* 絶対位置指定 */
+  top: 10px; /* 上からの位置を指定 */
+  right: 10px; /* 左からの位置を指定 */
+  width: 80px;
+  height: 50px;
+}
+
+.timespace {
+  padding-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.shiftsubmitbutton {
+  background-color: #4caf50; /* 主な背景色 (この場合は緑) */
+  border: none; /* ボーダーをなくす */
+  color: white; /* 文字色は白 */
+  padding: 10px 20px; /* 上下のパディングは10px、左右のパディングは20px */
+  text-align: center; /* テキストは中央寄せ */
+  text-decoration: none; /* テキストの下線をなくす */
+  display: inline-block; /* インラインブロックとして表示 */
+  font-size: 16px; /* フォントサイズは16px */
+  margin: 4px 2px; /* マージンを微調整 */
+  cursor: pointer; /* カーソルを手のアイコンにする */
+  border-radius: 4px; /* 角を少し丸くする */
+  transition: background-color 0.3s; /* 背景色の遷移効果 */
+}
+
+.shiftsubmitbutton:hover {
+  background-color: #45a049; /* ホバー時の背景色 */
+}
+
+.deleteShiftButton {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background-color: red;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+}

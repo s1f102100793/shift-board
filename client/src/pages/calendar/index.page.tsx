@@ -1,11 +1,12 @@
-import { TextField } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import {
   AddButton,
+  AutoCompleteField,
   ClearButtonContainer,
+  CloseButton,
   SelectedDaysSection,
+  ShiftButtons,
 } from 'src/components/ShiftComponents';
 import { useDays } from 'src/hooks/useDays';
 import { pagesPath } from 'src/utils/$path';
@@ -49,19 +50,14 @@ const ShiftBoard: React.FC = () => {
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
-
     const firstDayOfMonth = getFirstDayOfMonth(selectedMonth, selectedYear);
-
     const data = [];
-
     for (let i = 0; i < firstDayOfMonth; i++) {
       data.push(null);
     }
-
     for (let i = 1; i <= daysInMonth; i++) {
       data.push(i);
     }
-
     setCalendarData(data);
   }, [selectedMonth, selectedYear]);
 
@@ -76,7 +72,6 @@ const ShiftBoard: React.FC = () => {
       });
   }, []);
 
-  // 1
   const navigateMonth = (offset: number) => {
     let newMonth = selectedMonth + offset;
     let newYear = selectedYear;
@@ -146,7 +141,6 @@ const ShiftBoard: React.FC = () => {
           </Link>
         </nav>
       </header>
-      {/* Upper Half: Calendar */}
       <div className={styles.calendarSection}>
         <div className={styles.monthNavigation}>
           <button className={styles.navButton} onClick={() => navigateMonth(-1)}>
@@ -188,41 +182,21 @@ const ShiftBoard: React.FC = () => {
         <SelectedDaysSection selectedMonth={selectedMonth} selectedDays={selectedDays} />
         <AddButton setShowShiftBar={setShowShiftBar} />
         <div className={`${styles.shiftBar} ${showShiftBar ? styles.shiftBarVisible : ''}`}>
-          <div className={styles.closeButtonContainer}>
-            <button className={styles.clearButton} onClick={() => setShowShiftBar(false)}>
-              閉じる
-            </button>
-          </div>
+          <CloseButton onClose={() => setShowShiftBar(false)} />
           <div className="autocompleteContainer">
-            <div className={styles.timespace}>
-              <Autocomplete
-                id="disabled-options-demo"
-                options={startTimeSlots}
-                sx={{ width: 300 }}
-                renderInput={(params) => <TextField {...params} label="バイト開始時間" />}
-                onChange={(event, newValue) => setSelectedStartTime(newValue)}
-              />
-            </div>
-            <div className={styles.timespace}>
-              <Autocomplete
-                id="disabled-options-demo"
-                options={endTimeSlots}
-                sx={{ width: 300 }}
-                renderInput={(params) => <TextField {...params} label="バイト終了時間" />}
-                onChange={(event, newValue) => setSelectedEndTime(newValue)}
-              />
-            </div>
-            <div className={styles.timespace}>
-              <button className={styles.shiftsubmitnutton} onClick={createShift}>
-                シフトを送る
-              </button>
-              <button className={styles.deleteShiftButton} onClick={handleDeleteShift}>
-                シフトを消す
-              </button>
-              {/* <button className="save-to-database-btn" onClick={fetchShift}>
-                シフトとってくる
-              </button> */}
-            </div>
+            <AutoCompleteField
+              label="バイト開始時間"
+              id="startTime-demo"
+              options={startTimeSlots}
+              onChange={setSelectedStartTime}
+            />
+            <AutoCompleteField
+              label="バイト終了時間"
+              id="endTime-demo"
+              options={endTimeSlots}
+              onChange={setSelectedEndTime}
+            />
+            <ShiftButtons onCreateShift={createShift} onDeleteShift={handleDeleteShift} />
           </div>
         </div>
       </div>
