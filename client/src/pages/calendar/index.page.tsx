@@ -99,6 +99,33 @@ const ShiftBoard: React.FC = () => {
     };
   }, [fetchShift, fetchFixedShift]);
 
+  const getDateStr = (day: number | null): string => {
+    if (day === null) return '';
+    return `${selectedYear}-${(selectedMonth + 1).toString().padStart(2, '0')}-${day
+      .toString()
+      .padStart(2, '0')}`;
+  };
+
+  // eslint-disable-next-line complexity
+  const getDayClassNames = (day: number | null, index: number): string => {
+    const dateStr = getDateStr(day);
+    const isHoliday = holidays[dateStr];
+    const isPendingShift = day !== null ? pendingShifts.includes(day.toString()) : false;
+    const isFixedShift = day !== null ? shifts.includes(day?.toString()) : false;
+
+    return `${styles.calendarDay} 
+      ${
+        day === today.day && selectedMonth === today.month && selectedYear === today.year
+          ? styles.today
+          : ''
+      } 
+      ${index % 7 === 0 || isHoliday ? styles.sunday : ''} 
+      ${index % 7 === 6 ? styles.saturday : ''} 
+      ${day !== null && selectedDays.includes(day) ? styles.selectedDay : ''} 
+      ${isPendingShift ? styles.pendingShiftDay : ''}
+      ${isFixedShift ? styles.fixedShiftDay : ''}`;
+  };
+
   return (
     <div className={styles.container}>
       <header className={styles.header}>
@@ -135,30 +162,10 @@ const ShiftBoard: React.FC = () => {
             </div>
           ))}
           {calendarData.map((day, index) => {
-            let dateStr = '';
-            if (day !== null) {
-              dateStr = `${selectedYear}-${(selectedMonth + 1).toString().padStart(2, '0')}-${day
-                .toString()
-                .padStart(2, '0')}`;
-            }
-            const isHoliday = holidays[dateStr];
-            const isPendingShift = day !== null ? pendingShifts.includes(day.toString()) : false;
-            const isFixedShift = day !== null ? shifts.includes(day?.toString()) : false;
             return (
               <div
                 key={index}
-                className={`${styles.calendarDay} 
-                ${
-                  day === today.day && selectedMonth === today.month && selectedYear === today.year
-                    ? styles.today
-                    : ''
-                } 
-                ${index % 7 === 0 || isHoliday ? styles.sunday : ''} 
-                ${index % 7 === 6 ? styles.saturday : ''} 
-                ${day !== null && selectedDays.includes(day) ? styles.selectedDay : ''} 
-                ${isPendingShift ? styles.pendingShiftDay : ''}
-                ${isFixedShift ? styles.fixedShiftDay : ''} 
-                `}
+                className={getDayClassNames(day, index)}
                 onClick={() => {
                   if (day !== null) {
                     handleDayClick(day);
