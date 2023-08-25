@@ -1,31 +1,12 @@
-// import { ActionIcon } from '@mantine/core';
-// import { TimeInput } from '@mantine/dates';
 import { TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
-// import { IconClock } from '@tabler/icons-react';
-import { useAtom } from 'jotai';
 import Link from 'next/link';
 import React, { useCallback, useEffect, useState } from 'react';
-import { userAtom } from 'src/atoms/user';
+import { useDays } from 'src/hooks/useDays';
 import { pagesPath } from 'src/utils/$path';
 import { apiClient } from 'src/utils/apiClient';
 import { returnNull } from 'src/utils/returnNull';
 import styles from './ShiftBoard.module.css';
-
-const MONTHS = [
-  '1月', // January
-  '2月', // February
-  '3月', // March
-  '4月', // April
-  '5月', // May
-  '6月', // June
-  '7月', // July
-  '8月', // August
-  '9月', // September
-  '10月', // October
-  '11月', // November
-  '12月', // December
-];
 
 function getDaysInMonth(month: number, year: number) {
   return new Date(year, month + 1, 0).getDate();
@@ -35,23 +16,35 @@ function getFirstDayOfMonth(month: number, year: number) {
   return new Date(year, month, 1).getDay();
 }
 
-const DAYS_OF_WEEK = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
 const ShiftBoard: React.FC = () => {
-  const now = new Date();
-  const today = { day: now.getDate(), month: now.getMonth(), year: now.getFullYear() };
+  const {
+    MONTHS,
+    DAYS_OF_WEEK,
+    now,
+    today,
+    user,
+    showShiftBar,
+    setShowShiftBar,
+    selectedDays,
+    setSelectedDays,
+    selectedStartTime,
+    setSelectedStartTime,
+    selectedEndTime,
+    setSelectedEndTime,
+    pendingShifts,
+    setPendingShifts,
+    shifts,
+    setShifts,
+    handleDayClick,
+    startTimeSlots,
+    endTimeSlots,
+    clearSelectedDays,
+  } = useDays();
 
-  const [user] = useAtom(userAtom);
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [calendarData, setCalendarData] = useState<(number | null)[]>([]);
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
-  const [showShiftBar, setShowShiftBar] = useState(false);
-  const [selectedDays, setSelectedDays] = useState<number[]>([]);
-  const [selectedStartTime, setSelectedStartTime] = useState<string | null>(null);
-  const [selectedEndTime, setSelectedEndTime] = useState<string | null>(null);
-  const [pendingShifts, setPendingShifts] = useState<string[]>([]);
-  const [shifts, setShifts] = useState<string[]>([]);
 
   useEffect(() => {
     const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
@@ -82,6 +75,7 @@ const ShiftBoard: React.FC = () => {
       });
   }, []);
 
+  // 1
   const navigateMonth = (offset: number) => {
     let newMonth = selectedMonth + offset;
     let newYear = selectedYear;
@@ -96,32 +90,6 @@ const ShiftBoard: React.FC = () => {
 
     setSelectedMonth(newMonth);
     setSelectedYear(newYear);
-  };
-
-  const handleDayClick = (day: number) => {
-    setSelectedDays((prevDays) =>
-      prevDays.includes(day) ? prevDays.filter((d) => d !== day) : [...prevDays, day]
-    );
-  };
-
-  const startTimeSlots: string[] = [];
-  for (let i = 10; i <= 19; i++) {
-    startTimeSlots.push(`${i}:00`);
-    if (i !== 19) {
-      startTimeSlots.push(`${i}:30`);
-    }
-  }
-
-  const endTimeSlots: string[] = [];
-  for (let i = 11; i <= 23; i++) {
-    endTimeSlots.push(`${i}:00`);
-    if (i !== 19) {
-      endTimeSlots.push(`${i}:30`);
-    }
-  }
-
-  const clearSelectedDays = () => {
-    setSelectedDays([]);
   };
 
   const createShift = async () => {
@@ -139,7 +107,6 @@ const ShiftBoard: React.FC = () => {
       return;
     }
 
-    // console.log('aaa');
     for (const day of selectedDays) {
       await apiClient.shift.post({
         body: {
@@ -158,12 +125,10 @@ const ShiftBoard: React.FC = () => {
       console.error('User is null or undefined.');
       return;
     }
-    // console.log(user.id);
     const getPendingShifts = await apiClient.shift2
       .$post({ body: { id: user.id } })
       .catch(returnNull);
     const getPendingShifts_date = getPendingShifts?.map((shift) => shift.date);
-    // console.log(getPendingShifts_date);
     if (
       Array.isArray(getPendingShifts_date) &&
       getPendingShifts_date.every((item) => typeof item === 'string')
