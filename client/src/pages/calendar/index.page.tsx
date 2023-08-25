@@ -3,6 +3,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Link from 'next/link';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDays } from 'src/hooks/useDays';
+import { useShifts } from 'src/hooks/useShifts';
 import { pagesPath } from 'src/utils/$path';
 import { apiClient } from 'src/utils/apiClient';
 import { returnNull } from 'src/utils/returnNull';
@@ -26,10 +27,7 @@ const ShiftBoard: React.FC = () => {
     showShiftBar,
     setShowShiftBar,
     selectedDays,
-    setSelectedDays,
-    selectedStartTime,
     setSelectedStartTime,
-    selectedEndTime,
     setSelectedEndTime,
     pendingShifts,
     setPendingShifts,
@@ -40,6 +38,8 @@ const ShiftBoard: React.FC = () => {
     endTimeSlots,
     clearSelectedDays,
   } = useDays();
+
+  const { createShift } = useShifts();
 
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
@@ -90,34 +90,6 @@ const ShiftBoard: React.FC = () => {
 
     setSelectedMonth(newMonth);
     setSelectedYear(newYear);
-  };
-
-  const createShift = async () => {
-    if (!user) {
-      console.error('User is missing or null');
-      return;
-    }
-    if (
-      selectedStartTime === null ||
-      selectedStartTime === '' ||
-      selectedEndTime === null ||
-      selectedEndTime === ''
-    ) {
-      console.error('Start time or end time is missing!');
-      return;
-    }
-
-    for (const day of selectedDays) {
-      await apiClient.shift.post({
-        body: {
-          id: user.id,
-          date: day.toString(), // selectedDays の各要素を date として使用
-          starttime: selectedStartTime,
-          endtime: selectedEndTime,
-        },
-      });
-    }
-    setSelectedDays([]);
   };
 
   const fetchShift = useCallback(async () => {
