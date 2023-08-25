@@ -18,13 +18,6 @@
   background-color: #f2f2f2;
 }
 
-.employeeName {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100px; /* この値は適切に調整してください */
-}
-
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -79,10 +72,3 @@
   position: relative;
 }
 
-.redText {
-  color: red;
-}
-
-.clickableRedText {
-  cursor: pointer;
-}

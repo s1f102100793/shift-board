@@ -1,3 +1,5 @@
+import type { EmployeeId } from 'commonTypesWithClient/branded';
+import type { ShiftModel } from 'commonTypesWithClient/models';
 import Link from 'next/link';
 import { useEmployee } from 'src/hooks/useEmployee';
 import { pagesPath } from 'src/utils/$path';
@@ -83,3 +85,136 @@ export const TableHeader: React.FC<TableHeaderProps> = ({
     </thead>
   );
 };
+
+type EmployeeNameProps = {
+  name: string;
+};
+
+const EmployeeName: React.FC<EmployeeNameProps> = ({ name }) => (
+  <td className={styles.employeeName}>{name}</td>
+);
+
+type FixedShiftProps = {
+  shift: ShiftModel;
+  onDelete: () => void;
+};
+
+const FixedShift: React.FC<FixedShiftProps> = ({ shift, onDelete }) => (
+  <span
+    className={`${styles.redText} ${styles.clickableRedText}`}
+    onClick={() => {
+      if (window.confirm('この確定シフトを取り消しますか？')) {
+        onDelete();
+      }
+    }}
+  >
+    {`${shift.starttime} - ${shift.endtime}`}
+  </span>
+);
+
+type NormalShiftProps = {
+  shift: ShiftModel;
+  onCreateFixed: () => Promise<void>;
+};
+
+// NormalShiftコンポーネント
+const NormalShift: React.FC<NormalShiftProps> = ({ shift, onCreateFixed }) => (
+  <span
+    onClick={async () => {
+      await onCreateFixed();
+      // 必要に応じて、シフト情報の再取得やUIの更新を行う
+    }}
+  >
+    {`${shift.starttime} - ${shift.endtime}`}
+  </span>
+);
+
+type ShiftCellProps = {
+  employee: EmployeeId;
+  day: number;
+  shifts: ShiftModel[];
+  fixedShifts: ShiftModel[];
+  deleteFixedShift: (employee: EmployeeId, day: string) => void;
+  createFixedShift: (
+    employee: EmployeeId,
+    day: string,
+    startTime: string,
+    endTime: string
+  ) => Promise<void>;
+};
+const ShiftCell: React.FC<ShiftCellProps> = ({
+  employee,
+  day,
+  shifts,
+  fixedShifts,
+  deleteFixedShift,
+  createFixedShift,
+}) => {
+  const shiftForDay = shifts.find((s) => s.id === employee && s.date === day.toString());
+  const fixedShiftForDay = fixedShifts.find((s) => s.id === employee && s.date === day.toString());
+
+  if (fixedShiftForDay) {
+    return (
+      <FixedShift
+        shift={fixedShiftForDay}
+        onDelete={() => deleteFixedShift(employee, day.toString())}
+      />
+    );
+  }
+
+  if (shiftForDay) {
+    return (
+      <NormalShift
+        shift={shiftForDay}
+        onCreateFixed={() =>
+          createFixedShift(employee, day.toString(), shiftForDay.starttime, shiftForDay.endtime)
+        }
+      />
+    );
+  }
+
+  return null;
+};
+
+type ShiftTableBodyProps = {
+  employees: EmployeeId[];
+  daysArray: number[];
+  shifts: ShiftModel[];
+  fixedShifts: ShiftModel[];
+  deleteFixedShift: (employee: EmployeeId, day: string) => void;
+  createFixedShift: (
+    employee: EmployeeId,
+    day: string,
+    startTime: string,
+    endTime: string
+  ) => Promise<void>;
+};
+
+export const ShiftTableBody: React.FC<ShiftTableBodyProps> = ({
+  employees,
+  daysArray,
+  shifts,
+  fixedShifts,
+  deleteFixedShift,
+  createFixedShift,
+}) => (
+  <tbody>
+    {employees.map((employee) => (
+      <tr key={employee}>
+        <EmployeeName name={employee} />
+        {daysArray.map((day) => (
+          <td key={day}>
+            <ShiftCell
+              employee={employee}
+              day={day}
+              shifts={shifts}
+              fixedShifts={fixedShifts}
+              deleteFixedShift={deleteFixedShift}
+              createFixedShift={createFixedShift}
+            />
+          </td>
+        ))}
+      </tr>
+    ))}
+  </tbody>
+);
