@@ -24,7 +24,7 @@ const Home = () => {
         </section>
       </main>
       <footer className={styles.footer}>
-        <p>&copy; 2023 シフトボード. すべての権利を保持。</p>
+        <p>&copy; 2023 シフトボード.All rights reserved</p>
       </footer>
     </div>
   );
