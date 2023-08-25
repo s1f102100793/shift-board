@@ -61,33 +61,43 @@ export const useDays = () => {
     setSelectedDays([]);
   };
 
-  const createShift = async () => {
-    console.log(selectedStartTime);
-    console.log('aaaa');
+  const isEmptyOrNull = (value: string | null): boolean => {
+    return value === null || value === '';
+  };
+
+  const isValidShiftData = (): boolean => {
     if (!user) {
       console.error('User is missing or null');
-      return;
+      return false;
     }
-    if (
-      selectedStartTime === null ||
-      selectedStartTime === '' ||
-      selectedEndTime === null ||
-      selectedEndTime === ''
-    ) {
+    if (isEmptyOrNull(selectedStartTime) || isEmptyOrNull(selectedEndTime)) {
       console.error('Start time or end time is missing!');
-      return;
+      return false;
     }
+    return true;
+  };
+
+  const postShiftData = async (day: number) => {
+    if (!user) return;
+    if (isEmptyOrNull(selectedStartTime) || isEmptyOrNull(selectedEndTime)) return;
+
+    await apiClient.shift.post({
+      body: {
+        id: user.id,
+        date: day.toString(),
+        starttime: selectedStartTime as string,
+        endtime: selectedEndTime as string,
+      },
+    });
+  };
+
+  const createShift = async () => {
+    if (!isValidShiftData()) return;
 
     for (const day of selectedDays) {
-      await apiClient.shift.post({
-        body: {
-          id: user.id,
-          date: day.toString(), // selectedDays の各要素を date として使用
-          starttime: selectedStartTime,
-          endtime: selectedEndTime,
-        },
-      });
+      await postShiftData(day);
     }
+
     setSelectedDays([]);
   };
 
