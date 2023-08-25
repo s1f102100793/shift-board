@@ -1,6 +1,8 @@
 import { useAtom } from 'jotai';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { userAtom } from 'src/atoms/user';
+import { apiClient } from 'src/utils/apiClient';
+import { returnNull } from 'src/utils/returnNull';
 
 export const useDays = () => {
   const MONTHS = [
@@ -59,6 +61,69 @@ export const useDays = () => {
     setSelectedDays([]);
   };
 
+  const createShift = async () => {
+    console.log(selectedStartTime);
+    console.log('aaaa');
+    if (!user) {
+      console.error('User is missing or null');
+      return;
+    }
+    if (
+      selectedStartTime === null ||
+      selectedStartTime === '' ||
+      selectedEndTime === null ||
+      selectedEndTime === ''
+    ) {
+      console.error('Start time or end time is missing!');
+      return;
+    }
+
+    for (const day of selectedDays) {
+      await apiClient.shift.post({
+        body: {
+          id: user.id,
+          date: day.toString(), // selectedDays の各要素を date として使用
+          starttime: selectedStartTime,
+          endtime: selectedEndTime,
+        },
+      });
+    }
+    setSelectedDays([]);
+  };
+
+  const fetchShift = useCallback(async () => {
+    if (!user) {
+      console.error('User is null or undefined.');
+      return;
+    }
+    const getPendingShifts = await apiClient.shift2
+      .$post({ body: { id: user.id } })
+      .catch(returnNull);
+    const getPendingShifts_date = getPendingShifts?.map((shift) => shift.date);
+    if (
+      Array.isArray(getPendingShifts_date) &&
+      getPendingShifts_date.every((item) => typeof item === 'string')
+    ) {
+      setPendingShifts(getPendingShifts_date);
+    }
+  }, [user, setPendingShifts]);
+
+  const fetchFixedShift = useCallback(async () => {
+    if (!user) {
+      console.error('User is null or undefined.');
+      return;
+    }
+    const fetchedShifts = await apiClient.shift3.$post({ body: { id: user.id } }).catch(returnNull);
+    const fetchedShifts_date = fetchedShifts?.map((shift) => shift.date);
+    console.log(fetchedShifts_date);
+    if (
+      Array.isArray(fetchedShifts_date) &&
+      fetchedShifts_date.every((item) => typeof item === 'string')
+    ) {
+      setShifts(fetchedShifts_date);
+    }
+  }, [user, setShifts]);
+
   return {
     MONTHS,
     DAYS_OF_WEEK,
@@ -68,18 +133,16 @@ export const useDays = () => {
     showShiftBar,
     setShowShiftBar,
     selectedDays,
-    setSelectedDays,
-    selectedStartTime,
     setSelectedStartTime,
-    selectedEndTime,
     setSelectedEndTime,
     pendingShifts,
-    setPendingShifts,
     shifts,
-    setShifts,
     handleDayClick,
     startTimeSlots,
     endTimeSlots,
     clearSelectedDays,
+    createShift,
+    fetchShift,
+    fetchFixedShift,
   };
 };

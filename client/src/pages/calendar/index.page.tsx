@@ -1,11 +1,10 @@
 import { TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDays } from 'src/hooks/useDays';
 import { pagesPath } from 'src/utils/$path';
 import { apiClient } from 'src/utils/apiClient';
-import { returnNull } from 'src/utils/returnNull';
 import styles from './ShiftBoard.module.css';
 
 function getDaysInMonth(month: number, year: number) {
@@ -26,19 +25,17 @@ const ShiftBoard: React.FC = () => {
     showShiftBar,
     setShowShiftBar,
     selectedDays,
-    setSelectedDays,
-    selectedStartTime,
     setSelectedStartTime,
-    selectedEndTime,
     setSelectedEndTime,
     pendingShifts,
-    setPendingShifts,
     shifts,
-    setShifts,
     handleDayClick,
     startTimeSlots,
     endTimeSlots,
     clearSelectedDays,
+    createShift,
+    fetchShift,
+    fetchFixedShift,
   } = useDays();
 
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
@@ -91,67 +88,6 @@ const ShiftBoard: React.FC = () => {
     setSelectedMonth(newMonth);
     setSelectedYear(newYear);
   };
-
-  const createShift = async () => {
-    if (!user) {
-      console.error('User is missing or null');
-      return;
-    }
-    if (
-      selectedStartTime === null ||
-      selectedStartTime === '' ||
-      selectedEndTime === null ||
-      selectedEndTime === ''
-    ) {
-      console.error('Start time or end time is missing!');
-      return;
-    }
-
-    for (const day of selectedDays) {
-      await apiClient.shift.post({
-        body: {
-          id: user.id,
-          date: day.toString(), // selectedDays の各要素を date として使用
-          starttime: selectedStartTime,
-          endtime: selectedEndTime,
-        },
-      });
-    }
-    setSelectedDays([]);
-  };
-
-  const fetchShift = useCallback(async () => {
-    if (!user) {
-      console.error('User is null or undefined.');
-      return;
-    }
-    const getPendingShifts = await apiClient.shift2
-      .$post({ body: { id: user.id } })
-      .catch(returnNull);
-    const getPendingShifts_date = getPendingShifts?.map((shift) => shift.date);
-    if (
-      Array.isArray(getPendingShifts_date) &&
-      getPendingShifts_date.every((item) => typeof item === 'string')
-    ) {
-      setPendingShifts(getPendingShifts_date);
-    }
-  }, [user, setPendingShifts]);
-
-  const fetchFixedShift = useCallback(async () => {
-    if (!user) {
-      console.error('User is null or undefined.');
-      return;
-    }
-    const fetchedShifts = await apiClient.shift3.$post({ body: { id: user.id } }).catch(returnNull);
-    const fetchedShifts_date = fetchedShifts?.map((shift) => shift.date);
-    console.log(fetchedShifts_date);
-    if (
-      Array.isArray(fetchedShifts_date) &&
-      fetchedShifts_date.every((item) => typeof item === 'string')
-    ) {
-      setShifts(fetchedShifts_date);
-    }
-  }, [user, setShifts]);
 
   useEffect(() => {
     fetchShift();
