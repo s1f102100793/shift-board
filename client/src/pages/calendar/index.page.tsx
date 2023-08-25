@@ -1,12 +1,10 @@
 import { TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDays } from 'src/hooks/useDays';
-import { useShifts } from 'src/hooks/useShifts';
 import { pagesPath } from 'src/utils/$path';
 import { apiClient } from 'src/utils/apiClient';
-import { returnNull } from 'src/utils/returnNull';
 import styles from './ShiftBoard.module.css';
 
 function getDaysInMonth(month: number, year: number) {
@@ -30,16 +28,15 @@ const ShiftBoard: React.FC = () => {
     setSelectedStartTime,
     setSelectedEndTime,
     pendingShifts,
-    setPendingShifts,
     shifts,
-    setShifts,
     handleDayClick,
     startTimeSlots,
     endTimeSlots,
     clearSelectedDays,
+    createShift,
+    fetchShift,
+    fetchFixedShift,
   } = useDays();
-
-  const { createShift } = useShifts();
 
   const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
   const [selectedYear, setSelectedYear] = useState(now.getFullYear());
@@ -91,39 +88,6 @@ const ShiftBoard: React.FC = () => {
     setSelectedMonth(newMonth);
     setSelectedYear(newYear);
   };
-
-  const fetchShift = useCallback(async () => {
-    if (!user) {
-      console.error('User is null or undefined.');
-      return;
-    }
-    const getPendingShifts = await apiClient.shift2
-      .$post({ body: { id: user.id } })
-      .catch(returnNull);
-    const getPendingShifts_date = getPendingShifts?.map((shift) => shift.date);
-    if (
-      Array.isArray(getPendingShifts_date) &&
-      getPendingShifts_date.every((item) => typeof item === 'string')
-    ) {
-      setPendingShifts(getPendingShifts_date);
-    }
-  }, [user, setPendingShifts]);
-
-  const fetchFixedShift = useCallback(async () => {
-    if (!user) {
-      console.error('User is null or undefined.');
-      return;
-    }
-    const fetchedShifts = await apiClient.shift3.$post({ body: { id: user.id } }).catch(returnNull);
-    const fetchedShifts_date = fetchedShifts?.map((shift) => shift.date);
-    console.log(fetchedShifts_date);
-    if (
-      Array.isArray(fetchedShifts_date) &&
-      fetchedShifts_date.every((item) => typeof item === 'string')
-    ) {
-      setShifts(fetchedShifts_date);
-    }
-  }, [user, setShifts]);
 
   useEffect(() => {
     fetchShift();
