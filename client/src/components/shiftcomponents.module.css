@@ -1,0 +1,64 @@
+.clearButtonContainer {
+  position: absolute; /* 絶対位置指定 */
+  top: 0; /* 上端に配置 */
+  right: 0; /* 右端に配置 */
+}
+
+.clearButton {
+  display: inline-block;
+  padding: 5px 10px; /* サイズを小さくするためにパディングを減少 */
+  font-size: 14px; /* テキストのサイズを小さくする */
+  background-color: rgba(0, 123, 255, 0.7); /* 透明度を上げるための背景色 */
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  position: relative;
+  left: -10px; /* ボタンを少し左に移動 */
+  bottom: -10px; /* ボタンを少し下に移動 */
+}
+
+.clearButton:hover {
+  background-color: rgba(0, 86, 179, 0.7); /* 透明度を上げるためのホバー背景色 */
+}
+
+.clearButton:active {
+  background-color: rgba(0, 68, 153, 0.7); /* 透明度を上げるためのアクティブ背景色 */
+}
+
+.clearButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.5);
+}
+
+.selectedDaysSection {
+  max-width: 270px;
+  position: absolute;
+  top: 8px; /* 上部からの距離を少し小さく */
+  left: 8px; /* 左側からの距離を少し小さく */
+  background-color: #f5f5f5;
+  padding: 4px 6px; /* パディングを少し小さく */
+  border-radius: 3px; /* 角の丸みを少し小さく */
+  font-size: 12px; /* フォントサイズを小さく */
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1); /* 影を少し薄く */
+  z-index: 1;
+  /* display: flex;
+  flex-wrap: wrap; /* 折り返して表示 */
+  /* gap: 8px;  */
+  overflow-x: auto; /* 横スクロールバーの表示 */
+  white-space: nowrap;
+}
+
+.addButton {
+  position: absolute;
+  top: 20px; /* この値を調整してボタンの位置を下に移動します。必要に応じてさらに増やすことができます。 */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}

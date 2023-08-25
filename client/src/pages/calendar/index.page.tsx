@@ -2,6 +2,11 @@ import { TextField } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
+import {
+  AddButton,
+  ClearButtonContainer,
+  SelectedDaysSection,
+} from 'src/components/ShiftComponents';
 import { useDays } from 'src/hooks/useDays';
 import { pagesPath } from 'src/utils/$path';
 import styles from './ShiftBoard.module.css';
@@ -179,17 +184,9 @@ const ShiftBoard: React.FC = () => {
         </div>
       </div>
       <div className={styles.shiftInputSection}>
-        <div className={styles.clearButtonContainer}>
-          <button className={styles.clearButton} onClick={clearSelectedDays}>
-            選択をクリア
-          </button>
-        </div>
-        <div className={styles.selectedDaysSection}>
-          選択された日： {selectedDays.map((day) => `${MONTHS[selectedMonth]} ${day}日`).join(', ')}
-        </div>
-        <button className={styles.addButton} onClick={() => setShowShiftBar(true)}>
-          ＋シフトを追加
-        </button>
+        <ClearButtonContainer clearSelectedDays={clearSelectedDays} />
+        <SelectedDaysSection selectedMonth={selectedMonth} selectedDays={selectedDays} />
+        <AddButton setShowShiftBar={setShowShiftBar} />
         <div className={`${styles.shiftBar} ${showShiftBar ? styles.shiftBarVisible : ''}`}>
           <div className={styles.closeButtonContainer}>
             <button className={styles.clearButton} onClick={() => setShowShiftBar(false)}>
