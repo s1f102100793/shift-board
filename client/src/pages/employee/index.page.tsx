@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Header, TableHeader } from 'src/components/EmployeeComponets';
+import { Header, ShiftTableBody, TableHeader } from 'src/components/EmployeeComponets';
 import { useEmployee } from 'src/hooks/useEmployee';
 import styles from './EmployeeTask.module.css';
 
@@ -52,53 +52,15 @@ const EmployeeTask = () => {
       <Header />
       <table className={styles.table}>
         <TableHeader date={date} daysArray={daysArray} holidays={holidays} openModal={openModal} />
-        <tbody>
-          {employees.map((employee) => (
-            <tr key={employee}>
-              <td className={styles.employeeName}>{employee}</td>
-              {daysArray.map((day) => {
-                const shiftForDay = shifts.find(
-                  (shift) => shift.id === employee && shift.date === day.toString()
-                );
-
-                const fixedShiftForDay = fixedShifts.find(
-                  (shift) => shift.id === employee && shift.date === day.toString()
-                );
-
-                const displayShift = fixedShiftForDay ? (
-                  <span
-                    className={`${styles.redText} ${styles.clickableRedText}`}
-                    onClick={() => {
-                      if (window.confirm('この確定シフトを取り消しますか？')) {
-                        deleteFixedShift(employee, day.toString());
-                      }
-                    }}
-                  >
-                    {`${fixedShiftForDay.starttime} - ${fixedShiftForDay.endtime}`}
-                  </span>
-                ) : shiftForDay ? (
-                  <span
-                    onClick={async () => {
-                      await createFixedShift(
-                        employee,
-                        day.toString(),
-                        shiftForDay.starttime,
-                        shiftForDay.endtime
-                      );
-                      // 必要に応じて、シフト情報の再取得やUIの更新を行う
-                    }}
-                  >
-                    {`${shiftForDay.starttime} - ${shiftForDay.endtime}`}
-                  </span>
-                ) : null;
-
-                return <td key={day}>{displayShift}</td>;
-              })}
-            </tr>
-          ))}
-        </tbody>
+        <ShiftTableBody
+          employees={employees}
+          daysArray={daysArray}
+          shifts={shifts}
+          fixedShifts={fixedShifts}
+          deleteFixedShift={deleteFixedShift}
+          createFixedShift={createFixedShift}
+        />
       </table>
-
       {isModalOpen && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
