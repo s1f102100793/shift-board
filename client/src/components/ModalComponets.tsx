@@ -101,13 +101,25 @@ const getTimeFromShift = (shift: ShiftModel | undefined) => {
   return [startHour, startMinute, endHour, endMinute];
 };
 
-const isWithinEditingTime = (editingShift: ShiftModel, employeeId: string, hour: number) => {
+type EditingShiftType = {
+  employeeId: EmployeeId;
+  startHour: string;
+  endHour?: string | undefined;
+  editingEnd?: boolean | undefined;
+};
+
+// eslint-disable-next-line complexity
+const isWithinEditingTime = (
+  editingShift: EditingShiftType | null,
+  employeeId: EmployeeId,
+  hour: number
+) => {
   return (
-    editingShift?.id === employeeId &&
-    typeof editingShift?.starttime === 'string' &&
-    typeof editingShift?.endtime === 'string' &&
-    parseFloat(editingShift.starttime) <= hour &&
-    parseFloat(editingShift.endtime) > hour
+    editingShift?.employeeId === employeeId &&
+    typeof editingShift?.startHour === 'string' &&
+    typeof editingShift?.endHour === 'string' &&
+    parseFloat(editingShift.startHour) <= hour &&
+    parseFloat(editingShift.endHour || '0') > hour
   );
 };
 
@@ -119,6 +131,7 @@ type ShiftTimeCellProps = {
   fixedShifts: ShiftModel[];
 };
 
+// eslint-disable-next-line complexity
 const ShiftTimeCell: React.FC<ShiftTimeCellProps> = ({
   hour,
   employee,
@@ -184,27 +197,35 @@ const ShiftTimeCell: React.FC<ShiftTimeCellProps> = ({
     }
   };
 
-  const isValidEditingShift = (shift: ShiftModel | null) => {
-    return (
-      shift &&
-      typeof shift.starttime === 'string' &&
-      shift.starttime.trim() !== '' &&
-      typeof shift.endtime === 'string' &&
-      shift.endtime.trim() !== ''
+  const isValidEditingShift = () => {
+    return !!(
+      editingShift &&
+      typeof editingShift.startHour === 'string' &&
+      editingShift.startHour.trim() !== '' &&
+      typeof editingShift.endHour === 'string' &&
+      editingShift.endHour.trim() !== ''
     );
   };
 
-  const getFormattedShiftTimes = (shift: ShiftModel) => {
-    const newStartTime = formatTime(parseFloat(shift.starttime));
-    const newEndTime = formatTime(parseFloat(shift.endtime));
+  const getFormattedShiftTimes = () => {
+    if (!editingShift) {
+      return { newStartTime: '', newEndTime: '' };
+    }
+    const newStartTime = editingShift.startHour
+      ? formatTime(parseFloat(editingShift.startHour))
+      : '';
+    const newEndTime =
+      editingShift.endHour !== undefined && editingShift.endHour.trim() !== ''
+        ? formatTime(parseFloat(editingShift.endHour))
+        : '';
 
     return { newStartTime, newEndTime };
   };
 
   const handleMouseUp = () => {
-    if (!isValidEditingShift(editingShift)) return;
+    if (!isValidEditingShift()) return;
 
-    const { newStartTime, newEndTime } = getFormattedShiftTimes(editingShift);
+    const { newStartTime, newEndTime } = getFormattedShiftTimes();
 
     createFixedShift(employee, selectedDate, newStartTime, newEndTime);
     setEditingShift(null);
