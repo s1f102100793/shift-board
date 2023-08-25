@@ -1,83 +1,30 @@
-import type { EmployeeId } from 'commonTypesWithClient/branded';
-import type { ShiftModel } from 'commonTypesWithClient/models';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { pagesPath } from 'src/utils/$path';
-import { apiClient } from 'src/utils/apiClient';
-import { returnNull } from 'src/utils/returnNull';
+import { useEffect } from 'react';
+import { Header, TableHeader } from 'src/components/EmployeeComponets';
+import { useEmployee } from 'src/hooks/useEmployee';
 import styles from './EmployeeTask.module.css';
 
 const EmployeeTask = () => {
-  const date = new Date();
-  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  const daysArray = Array.from({ length: lastDay }, (_, i) => i + 1);
-
-  const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
-  const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
-  const [editingShift, setEditingShift] = useState<{
-    employeeId: EmployeeId;
-    startHour: string;
-    endHour?: string;
-    editingEnd?: boolean;
-  } | null>(null);
-
-  const openModal = (day: string) => {
-    setSelectedDate(day);
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const [shifts, setShifts] = useState<ShiftModel[]>([]);
-  const [fixedShifts, setFixedShifts] = useState<ShiftModel[]>([]);
-  const [employees, setEmployees] = useState<EmployeeId[]>([]);
-
-  const fetchShift = async () => {
-    const fetchedShifts = await apiClient.shift.$get().catch(returnNull);
-    // console.log(fetchedShifts);
-    if (fetchedShifts !== null && fetchedShifts !== undefined) {
-      setShifts(fetchedShifts);
-      const uniqueEmployeeIds = [...new Set(fetchedShifts.map((shift) => shift.id))];
-      setEmployees(uniqueEmployeeIds);
-    }
-  };
-
-  const fetchFixedShift = async () => {
-    const fetchedFixedShifts = await apiClient.fixedshift.$get().catch(returnNull);
-    if (fetchedFixedShifts !== null && fetchedFixedShifts !== undefined) {
-      setFixedShifts(fetchedFixedShifts);
-    }
-  };
-
-  const createFixedShift = async (
-    employeeId: EmployeeId,
-    date: string,
-    newStartTime: string,
-    newEndTime: string
-  ) => {
-    await apiClient.fixedshift.post({
-      body: {
-        id: employeeId,
-        date,
-        starttime: newStartTime,
-        endtime: newEndTime,
-      },
-    });
-  };
-
-  const deleteFixedShift = async (employeeId: EmployeeId, date: string) => {
-    // console.log(employeeId, date)
-    await apiClient.fixedshift.delete({
-      body: {
-        id: employeeId,
-        date,
-      },
-    });
-  };
+  const {
+    date,
+    daysArray,
+    weekDays,
+    holidays,
+    setHolidays,
+    isModalOpen,
+    selectedDate,
+    editingShift,
+    setEditingShift,
+    shifts,
+    fixedShifts,
+    employees,
+    openModal,
+    closeModal,
+    fetchShift,
+    fetchFixedShift,
+    createFixedShift,
+    deleteFixedShift,
+    formatTime,
+  } = useEmployee();
 
   useEffect(() => {
     const intervalId = setInterval(() => {
@@ -87,7 +34,7 @@ const EmployeeTask = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [fetchShift, fetchFixedShift]);
 
   useEffect(() => {
     fetch('https://holidays-jp.github.io/api/v1/date.json')
@@ -98,59 +45,13 @@ const EmployeeTask = () => {
       .catch((error) => {
         console.error('Failed to fetch holidays:', error);
       });
-  }, []);
-
-  const formatTime = (hourFloat: number) => {
-    const hours = Math.floor(hourFloat);
-    const minutes = hourFloat % 1 === 0.5 ? 30 : 0;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
-  };
+  }, [setHolidays]);
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <div className={styles.logoContainer}>
-          <h1 className={styles.logo}>シフトボード</h1>
-        </div>
-
-        <nav className={styles.nav}>
-          <Link href={pagesPath.$url()} className={styles.navItem}>
-            ホーム
-          </Link>
-        </nav>
-
-        <div className={styles.viewOptions}>
-          <button className={styles.viewButton}>週表示</button>
-          <button className={styles.viewButton}>月表示</button>
-        </div>
-      </header>
+      <Header />
       <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>{`${date.getFullYear()}年 ${date.getMonth() + 1}月`}</th>
-            {daysArray.map((day) => {
-              const currentDate = new Date(date.getFullYear(), date.getMonth(), day);
-              const dayOfWeek = currentDate.getDay();
-              const dateString = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1)
-                .toString()
-                .padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-
-              const isHoliday = Boolean(holidays[dateString]);
-              const isWeekend = dayOfWeek === 6 || dayOfWeek === 0;
-              const isHolidayOrWeekend = isHoliday || isWeekend;
-
-              return (
-                <th
-                  key={day}
-                  className={isHolidayOrWeekend ? styles.holiday : ''}
-                  onClick={() => openModal(day.toString())}
-                >
-                  {day} ({weekDays[dayOfWeek]})
-                </th>
-              );
-            })}
-          </tr>
-        </thead>
+        <TableHeader date={date} daysArray={daysArray} holidays={holidays} openModal={openModal} />
         <tbody>
           {employees.map((employee) => (
             <tr key={employee}>
@@ -291,32 +192,6 @@ const EmployeeTask = () => {
                                     employeeId: employee,
                                     startHour: hour.toString(),
                                   });
-                                  //     // シフトの開始時刻をクリックした場合
-                                  //     if (hour === startHour) {
-                                  //       setEditingShift({
-                                  //         employeeId: employee,
-                                  //         startHour: hour.toString(),
-                                  //         editingEnd: false, // startHourを編集中であることを示す
-                                  //       });
-                                  //     }
-                                  //     // シフトの終了時刻をクリックした場合
-                                  //     else if (hour === endHour) {
-                                  //       setEditingShift({
-                                  //         employeeId: employee,
-                                  //         startHour: startHour.toString(),
-                                  //         endHour: hour.toString(),
-                                  //         editingEnd: true, // endHourを編集中であることを示す
-                                  //       });
-                                  //     }
-                                  //     // シフトの間をクリックした場合（現在の動作と同じ）
-                                  //     else {
-                                  //       setEditingShift({
-                                  //         employeeId: employee,
-                                  //         startHour: hour.toString(),
-                                  //       });
-                                  //     }
-                                  //   }
-                                  // }}
                                 }
                               }}
                               onMouseEnter={() => {
@@ -325,32 +200,6 @@ const EmployeeTask = () => {
                                     hour >= startHour &&
                                     (hour < endHour ||
                                       (hour === endHour && currentMinutes < endMinute))
-                                    // // シフトの終了時刻を編集中
-                                    // if (editingShift.editingEnd === true) {
-                                    //   // クリックした時間が現在の開始時刻より後である場合
-                                    //   if (hour >= parseInt(editingShift.startHour, 10)) {
-                                    //     setEditingShift((prev) => {
-                                    //       if (!prev) return null;
-
-                                    //       return {
-                                    //         ...prev,
-                                    //         endHour: hour.toString(),
-                                    //       };
-                                    //     });
-                                    //   } else {
-                                    //     // シフトの範囲外にカーソルが移動した場合、編集を終了
-                                    //     setEditingShift(null);
-                                    //   }
-                                    // }
-                                    // // シフトの開始時刻を編集中
-
-                                    // // クリックした時間が現在の終了時刻より前である場合
-                                    // else if (
-                                    //   typeof editingShift.endHour === 'string'
-                                    //     ? hour <= parseInt(editingShift.endHour, 10)
-                                    //     : true
-
-                                    // 固定
                                   ) {
                                     setEditingShift((prev) => {
                                       if (!prev) return null;
@@ -359,12 +208,9 @@ const EmployeeTask = () => {
                                         employeeId: prev.employeeId,
                                         startHour: prev.startHour,
                                         endHour: hour.toString(),
-                                        // ...prev,
-                                        // startHour: hour.toString(),
                                       };
                                     });
                                   } else {
-                                    // シフトの範囲外にカーソルが移動した場合、編集を終了
                                     setEditingShift(null);
                                   }
                                 }
