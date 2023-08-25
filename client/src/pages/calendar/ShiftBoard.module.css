@@ -13,19 +13,6 @@
   border-bottom: 1px solid #e0e0e0;
 }
 
-.monthNavigation {
-  display: flex;
-  align-items: center;
-}
-
-.navButton {
-  background: #eee;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  margin: 0 12px;
-}
-
 .shiftInputSection {
   flex: 1;
   display: flex;
@@ -82,13 +69,6 @@
   display: flex;
 }
 
-.dayLabel {
-  flex: 1;
-  text-align: center;
-  padding: 5px;
-  background-color: #eee;
-}
-
 .today {
   background-color: #ffdd57; /* 今日の日付の背景色 */
 }
@@ -143,48 +123,11 @@
   transform: translateY(0); /* 表示時はバーが完全に見える位置に */
 }
 
-.addButton {
-  position: absolute;
-  top: 20px; /* この値を調整してボタンの位置を下に移動します。必要に応じてさらに増やすことができます。 */
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 8px 16px;
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.selectedDaysSection {
-  max-width: 270px;
-  position: absolute;
-  top: 8px; /* 上部からの距離を少し小さく */
-  left: 8px; /* 左側からの距離を少し小さく */
-  background-color: #f5f5f5;
-  padding: 4px 6px; /* パディングを少し小さく */
-  border-radius: 3px; /* 角の丸みを少し小さく */
-  font-size: 12px; /* フォントサイズを小さく */
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1); /* 影を少し薄く */
-  z-index: 1;
-  /* display: flex;
-  flex-wrap: wrap; /* 折り返して表示 */
-  /* gap: 8px;  */
-  overflow-x: auto; /* 横スクロールバーの表示 */
-  white-space: nowrap;
-}
-
 .shiftInputSection {
   /* ここに既存のスタイルを保持 */
   display: flex; /* フレックスボックスを有効にする */
   flex-direction: column; /* 子要素を縦方向に配置 */
   position: relative; /* 子要素のポジショニングの基準として使用 */
-}
-
-.clearButtonContainer {
-  position: absolute; /* 絶対位置指定 */
-  top: 0; /* 上端に配置 */
-  right: 0; /* 右端に配置 */
 }
 
 .clearButton {
@@ -223,14 +166,6 @@
   gap: 20px;
 }
 
-.closeButtonContainer {
-  position: absolute; /* 絶対位置指定 */
-  top: 10px; /* 上からの位置を指定 */
-  right: 10px; /* 左からの位置を指定 */
-  width: 80px;
-  height: 50px;
-}
-
 .autocompleteContainer > :first-child {
   margin-right: 20px; /* これを追加：最初のコンポーネントの右側にスペースを追加 */
 }
@@ -260,37 +195,6 @@
 /* アクティブ(クリック時)のスタイル */
 .save-to-database-btn:active {
   background-color: #004085; /* アクティブ時の背景色 (例: さらに濃い青) */
-}
-
-.shiftsubmitnutton {
-  background-color: #4caf50; /* 主な背景色 (この場合は緑) */
-  border: none; /* ボーダーをなくす */
-  color: white; /* 文字色は白 */
-  padding: 10px 20px; /* 上下のパディングは10px、左右のパディングは20px */
-  text-align: center; /* テキストは中央寄せ */
-  text-decoration: none; /* テキストの下線をなくす */
-  display: inline-block; /* インラインブロックとして表示 */
-  font-size: 16px; /* フォントサイズは16px */
-  margin: 4px 2px; /* マージンを微調整 */
-  cursor: pointer; /* カーソルを手のアイコンにする */
-  border-radius: 4px; /* 角を少し丸くする */
-  transition: background-color 0.3s; /* 背景色の遷移効果 */
-}
-
-.shiftsubmitButton:hover {
-  background-color: #45a049; /* ホバー時の背景色 */
-}
-
-/* CSS (仮想的な例) */
-.deleteShiftButton {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background-color: red;
-  color: white;
-  padding: 8px 16px;
-  border: none;
-  cursor: pointer;
 }
 
 .header {
