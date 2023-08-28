@@ -76,30 +76,33 @@ export const useDays = () => {
     }
     return true;
   };
-
-  const postShiftData = async (day: number) => {
+  const postShiftData = async (day: number, month: number) => {
     if (!user) return;
     if (isEmptyOrNull(selectedStartTime) || isEmptyOrNull(selectedEndTime)) return;
-
+  
+    // YYYY-MM-DD の形式にフォーマット
+    const formattedDate = `${today.year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+  
     await apiClient.shift.post({
       body: {
         id: user.id,
-        date: day.toString(),
+        date: formattedDate,
         starttime: selectedStartTime as string,
         endtime: selectedEndTime as string,
       },
     });
   };
-
+  
   const createShift = async () => {
     if (!isValidShiftData()) return;
-
+  
     for (const day of selectedDays) {
-      await postShiftData(day);
+      await postShiftData(day, today.month);
     }
-
+  
     setSelectedDays([]);
   };
+  
 
   const fetchShift = useCallback(async () => {
     if (!user) {
