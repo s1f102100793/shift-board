@@ -8,6 +8,8 @@ export type Methods = DefineMethods<{
   post: {
     reqBody: {
       id: string;
+      year: number;
+      month: number;
     };
     resBody: ShiftModel[];
   };

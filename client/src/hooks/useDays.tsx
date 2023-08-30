@@ -25,6 +25,8 @@ export const useDays = () => {
   const now = new Date();
 
   const today = { day: now.getDate(), month: now.getMonth(), year: now.getFullYear() };
+  const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
+  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
 
   const [user] = useAtom(userAtom);
 
@@ -34,8 +36,6 @@ export const useDays = () => {
   const [selectedEndTime, setSelectedEndTime] = useState<string | null>(null);
   const [pendingShifts, setPendingShifts] = useState<string[]>([]);
   const [shifts, setShifts] = useState<string[]>([]);
-  const [currentYear, setCurrentYear] = useState(now.getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(now.getMonth());
 
   const handleDayClick = (day: number) => {
     setSelectedDays((prevDays) =>
@@ -78,14 +78,14 @@ export const useDays = () => {
     }
     return true;
   };
-  const postShiftData = async (day: number, month: number) => {
+
+  const postShiftData = async (day: number) => {
     if (!user) return;
     if (isEmptyOrNull(selectedStartTime) || isEmptyOrNull(selectedEndTime)) return;
 
-    // YYYY-MM-DD の形式にフォーマット
-    const formattedDate = `${today.year}-${(month + 1).toString().padStart(2, '0')}-${day
-      .toString()
-      .padStart(2, '0')}`;
+    const formattedDate = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}-${String(
+      day
+    ).padStart(2, '0')}`;
 
     await apiClient.shift.post({
       body: {
@@ -101,37 +101,51 @@ export const useDays = () => {
     if (!isValidShiftData()) return;
 
     for (const day of selectedDays) {
-      await postShiftData(day, today.month);
+      await postShiftData(day);
     }
 
     setSelectedDays([]);
   };
+
+  // const fetchShift = useCallback(async () => {
+  //   if (!user) {
+  //     console.error('User is null or undefined.');
+  //     return;
+  //   }
+  //   const getPendingShifts = await apiClient.shift2
+  //     .$post({ body: { id: user.id, year: selectedYear, month: selectedMonth } })
+  //     .catch(returnNull);
+  //     // console.log(getPendingShifts);
+  //   const getPendingShifts_date = getPendingShifts?.map((shift) => shift.date);
+  //   if (
+  //     Array.isArray(getPendingShifts_date) &&
+  //     getPendingShifts_date.every((item) => typeof item === 'string')
+  //   ) {
+  //     setPendingShifts(getPendingShifts_date);
+  //   }
+  // }, [user, selectedYear, selectedMonth, setPendingShifts]);
 
   const fetchShift = useCallback(async () => {
     if (!user) {
       console.error('User is null or undefined.');
       return;
     }
+
     const getPendingShifts = await apiClient.shift2
-      .$post({ body: { id: user.id } })
+      .$post({ body: { id: user.id, year: selectedYear, month: selectedMonth } })
       .catch(returnNull);
 
-    if (Array.isArray(getPendingShifts)) {
-      const currentMonthShifts = getPendingShifts.filter((shift) => {
-        const shiftDateParts = shift.date.split('-'); // YYYY-MM-DD を [YYYY, MM, DD] に分解
-        const shiftYear = parseInt(shiftDateParts[0], 10);
-        const shiftMonth = parseInt(shiftDateParts[1], 10) - 1; // 月は0から始まるため
-        return shiftYear === currentYear && shiftMonth === currentMonth;
-      });
+    const filteredShiftDates = getPendingShifts?.filter((shift) => {
+      const [year, month] = shift.date.split('-').map(Number);
+      return year === selectedYear && month === selectedMonth + 1;
+    });
 
-      const getPendingShiftsDates = currentMonthShifts.map((shift) => {
-        const shiftDay = shift.date.split('-')[2];
-        return shiftDay;
-      });
+    const shiftDays = filteredShiftDates?.map((shift) => shift.date.split('-')[2]);
 
-      setPendingShifts(getPendingShiftsDates);
+    if (shiftDays && shiftDays.length > 0) {
+      setPendingShifts(shiftDays);
     }
-  }, [user, setPendingShifts, currentYear, currentMonth]);
+  }, [user, setPendingShifts, selectedYear, selectedMonth]);
 
   const fetchFixedShift = useCallback(async () => {
     if (!user) {
@@ -140,7 +154,6 @@ export const useDays = () => {
     }
     const fetchedShifts = await apiClient.shift3.$post({ body: { id: user.id } }).catch(returnNull);
     const fetchedShifts_date = fetchedShifts?.map((shift) => shift.date);
-    console.log(fetchedShifts_date);
     if (
       Array.isArray(fetchedShifts_date) &&
       fetchedShifts_date.every((item) => typeof item === 'string')
@@ -162,12 +175,17 @@ export const useDays = () => {
     DAYS_OF_WEEK,
     now,
     today,
+    selectedMonth,
+    setSelectedMonth,
+    selectedYear,
+    setSelectedYear,
     showShiftBar,
     setShowShiftBar,
     selectedDays,
     setSelectedStartTime,
     setSelectedEndTime,
     pendingShifts,
+    setPendingShifts,
     shifts,
     handleDayClick,
     startTimeSlots,
