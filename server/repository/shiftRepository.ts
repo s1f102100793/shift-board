@@ -75,9 +75,27 @@ export const shiftRepository2 = {
   },
 };
 
-export const getShift = async (myId: string): Promise<ShiftModel[]> => {
+export const getShift = async (
+  myId: string,
+  year: number,
+  month: number
+): Promise<ShiftModel[]> => {
+  // その月の最初の日の文字列を取得します。
+  const startDateString = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+
+  // その月の最後の日の文字列を取得します。
+  const endDay = new Date(year, month + 1, 0).getDate(); // monthに+1を追加
+  const endDateString = `${year}-${String(month + 1).padStart(2, '0')}-${endDay}`;
+
   const prismaTasks = await prismaClient.shift.findMany({
-    where: { id: myId },
+    where: {
+      id: myId,
+      // dateカラムの範囲フィルタリングを追加します。
+      date: {
+        gte: startDateString, // 月の開始日以上
+        lte: endDateString, // 月の最終日以下
+      },
+    },
     select: {
       id: true,
       date: true,
@@ -85,6 +103,7 @@ export const getShift = async (myId: string): Promise<ShiftModel[]> => {
       endtime: true,
     },
   });
+  // console.log(prismaTasks);
 
   return prismaTasks.map(toShiftModel);
 };

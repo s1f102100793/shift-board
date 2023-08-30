@@ -107,44 +107,45 @@ export const useDays = () => {
     setSelectedDays([]);
   };
 
-  const fetchShift = useCallback(async () => {
-    if (!user) {
-      console.error('User is null or undefined.');
-      return;
-    }
-    const getPendingShifts = await apiClient.shift2
-      .$post({ body: { id: user.id } })
-      .catch(returnNull);
-    const getPendingShifts_date = getPendingShifts?.map((shift) => shift.date);
-    if (
-      Array.isArray(getPendingShifts_date) &&
-      getPendingShifts_date.every((item) => typeof item === 'string')
-    ) {
-      setPendingShifts(getPendingShifts_date);
-    }
-  }, [user, setPendingShifts]);
-
   // const fetchShift = useCallback(async () => {
   //   if (!user) {
   //     console.error('User is null or undefined.');
   //     return;
   //   }
-
   //   const getPendingShifts = await apiClient.shift2
-  //     .$post({ body: { id: user.id } })
+  //     .$post({ body: { id: user.id, year: selectedYear, month: selectedMonth } })
   //     .catch(returnNull);
-
-  //   const filteredShiftDates = getPendingShifts?.filter((shift) => {
-  //     const [year, month] = shift.date.split('-').map(Number);
-  //     return year === selectedYear && month === selectedMonth + 1;
-  //   });
-
-  //   const shiftDays = filteredShiftDates?.map((shift) => shift.date.split('-')[2]);
-
-  //   if (shiftDays && shiftDays.length > 0) {
-  //     setPendingShifts(shiftDays);
+  //     // console.log(getPendingShifts);
+  //   const getPendingShifts_date = getPendingShifts?.map((shift) => shift.date);
+  //   if (
+  //     Array.isArray(getPendingShifts_date) &&
+  //     getPendingShifts_date.every((item) => typeof item === 'string')
+  //   ) {
+  //     setPendingShifts(getPendingShifts_date);
   //   }
-  // }, [user, setPendingShifts, selectedYear, selectedMonth]);
+  // }, [user, selectedYear, selectedMonth, setPendingShifts]);
+
+  const fetchShift = useCallback(async () => {
+    if (!user) {
+      console.error('User is null or undefined.');
+      return;
+    }
+
+    const getPendingShifts = await apiClient.shift2
+      .$post({ body: { id: user.id, year: selectedYear, month: selectedMonth } })
+      .catch(returnNull);
+
+    const filteredShiftDates = getPendingShifts?.filter((shift) => {
+      const [year, month] = shift.date.split('-').map(Number);
+      return year === selectedYear && month === selectedMonth + 1;
+    });
+
+    const shiftDays = filteredShiftDates?.map((shift) => shift.date.split('-')[2]);
+
+    if (shiftDays && shiftDays.length > 0) {
+      setPendingShifts(shiftDays);
+    }
+  }, [user, setPendingShifts, selectedYear, selectedMonth]);
 
   const fetchFixedShift = useCallback(async () => {
     if (!user) {
@@ -184,6 +185,7 @@ export const useDays = () => {
     setSelectedStartTime,
     setSelectedEndTime,
     pendingShifts,
+    setPendingShifts,
     shifts,
     handleDayClick,
     startTimeSlots,

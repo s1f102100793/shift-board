@@ -37,6 +37,7 @@ const ShiftBoard: React.FC = () => {
     setSelectedStartTime,
     setSelectedEndTime,
     pendingShifts,
+    setPendingShifts,
     shifts,
     handleDayClick,
     startTimeSlots,
@@ -89,13 +90,14 @@ const ShiftBoard: React.FC = () => {
 
     setSelectedMonth(newMonth);
     setSelectedYear(newYear);
+    setPendingShifts([]);
   };
 
   useEffect(() => {
     fetchShift();
     fetchFixedShift();
-    const intervalId = setInterval(fetchShift, 100);
-    const intervalNewId = setInterval(fetchFixedShift, 100);
+    const intervalId = setInterval(fetchShift, 150);
+    const intervalNewId = setInterval(fetchFixedShift, 150);
     return () => {
       clearInterval(intervalId);
       clearInterval(intervalNewId);
