@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Header, ShiftTableBody, TableHeader } from 'src/components/EmployeeComponets';
+import { ShiftTableHeader } from 'src/components/ModalComponets';
 import { useEmployee } from 'src/hooks/useEmployee';
 import styles from './EmployeeTask.module.css';
 
@@ -78,17 +79,7 @@ const EmployeeTask = () => {
                 </h2>
 
                 <table className={styles.timeTable}>
-                  <thead>
-                    <tr>
-                      <th>名前</th>
-                      {/* 10時から24時までを1時間ごとに表示 */}
-                      {Array.from({ length: 30 }, (_, i) => 10 + i * 0.5).map((hour) => (
-                        <th key={hour}>
-                          {Math.floor(hour)}:{hour % 1 === 0 ? '00' : '30'}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
+                  <ShiftTableHeader />
                   <tbody>
                     {employees.map((employee) => (
                       <tr key={employee}>
@@ -200,7 +191,6 @@ const EmployeeTask = () => {
                                 }
                               }}
                             >
-                              {/* もし編集中のセルであれば、何かしらのUIを表示 */}
                               {editingShift &&
                               editingShift.employeeId === employee &&
                               parseInt(editingShift.startHour, 10) <= hour &&

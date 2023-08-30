@@ -34,6 +34,8 @@ export const useDays = () => {
   const [selectedEndTime, setSelectedEndTime] = useState<string | null>(null);
   const [pendingShifts, setPendingShifts] = useState<string[]>([]);
   const [shifts, setShifts] = useState<string[]>([]);
+  const [currentYear, setCurrentYear] = useState(now.getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(now.getMonth());
 
   const handleDayClick = (day: number) => {
     setSelectedDays((prevDays) =>
@@ -76,15 +78,19 @@ export const useDays = () => {
     }
     return true;
   };
-
-  const postShiftData = async (day: number) => {
+  const postShiftData = async (day: number, month: number) => {
     if (!user) return;
     if (isEmptyOrNull(selectedStartTime) || isEmptyOrNull(selectedEndTime)) return;
+
+    // YYYY-MM-DD の形式にフォーマット
+    const formattedDate = `${today.year}-${(month + 1).toString().padStart(2, '0')}-${day
+      .toString()
+      .padStart(2, '0')}`;
 
     await apiClient.shift.post({
       body: {
         id: user.id,
-        date: day.toString(),
+        date: formattedDate,
         starttime: selectedStartTime as string,
         endtime: selectedEndTime as string,
       },
@@ -95,7 +101,7 @@ export const useDays = () => {
     if (!isValidShiftData()) return;
 
     for (const day of selectedDays) {
-      await postShiftData(day);
+      await postShiftData(day, today.month);
     }
 
     setSelectedDays([]);
@@ -109,14 +115,23 @@ export const useDays = () => {
     const getPendingShifts = await apiClient.shift2
       .$post({ body: { id: user.id } })
       .catch(returnNull);
-    const getPendingShifts_date = getPendingShifts?.map((shift) => shift.date);
-    if (
-      Array.isArray(getPendingShifts_date) &&
-      getPendingShifts_date.every((item) => typeof item === 'string')
-    ) {
-      setPendingShifts(getPendingShifts_date);
+
+    if (Array.isArray(getPendingShifts)) {
+      const currentMonthShifts = getPendingShifts.filter((shift) => {
+        const shiftDateParts = shift.date.split('-'); // YYYY-MM-DD を [YYYY, MM, DD] に分解
+        const shiftYear = parseInt(shiftDateParts[0], 10);
+        const shiftMonth = parseInt(shiftDateParts[1], 10) - 1; // 月は0から始まるため
+        return shiftYear === currentYear && shiftMonth === currentMonth;
+      });
+
+      const getPendingShiftsDates = currentMonthShifts.map((shift) => {
+        const shiftDay = shift.date.split('-')[2];
+        return shiftDay;
+      });
+
+      setPendingShifts(getPendingShiftsDates);
     }
-  }, [user, setPendingShifts]);
+  }, [user, setPendingShifts, currentYear, currentMonth]);
 
   const fetchFixedShift = useCallback(async () => {
     if (!user) {

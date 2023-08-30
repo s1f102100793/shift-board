@@ -9,7 +9,23 @@ import styles from './index.module.css';
 const FixedCalendar = () => {
   const date = new Date();
   const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  const daysArray = Array.from({ length: lastDay }, (_, i) => i + 1);
+  const [viewMode, setViewMode] = useState<'week' | 'month'>('month');
+  const startDateOfWeek = date.getDate() - date.getDay(); // 今週の日曜日の日付
+
+  const daysArray =
+    viewMode === 'month'
+      ? Array.from({ length: lastDay }, (_, i) => i + 1)
+      : Array.from({ length: 7 }, (_, i) => {
+          const currentDay = startDateOfWeek + i;
+          if (currentDay <= 0) {
+            const prevMonthLastDay = new Date(date.getFullYear(), date.getMonth(), 0).getDate();
+            return prevMonthLastDay + currentDay; // 前の月の日付を返す
+          } else if (currentDay > lastDay) {
+            return currentDay - lastDay; // 次の月の日付を返す
+          }
+          return currentDay;
+        });
+
   const weekDays = ['日', '月', '火', '水', '木', '金', '土'];
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
   const [shifts, setShifts] = useState<ShiftModel[]>([]);
@@ -62,8 +78,12 @@ const FixedCalendar = () => {
         </nav>
 
         <div className={styles.viewOptions}>
-          <button className={styles.viewButton}>週表示</button>
-          <button className={styles.viewButton}>月表示</button>
+          <button className={styles.viewButton} onClick={() => setViewMode('week')}>
+            週表示
+          </button>
+          <button className={styles.viewButton} onClick={() => setViewMode('month')}>
+            月表示
+          </button>
         </div>
       </header>
 
@@ -91,8 +111,6 @@ const FixedCalendar = () => {
           </tr>
         </thead>
         <tbody>
-          {/* この部分でユーザーごとのシフトを描画します。 */}
-          {/* バックエンドから取得したデータを使用してユーザーをループします。 */}
           {employees.map((employeeId) => (
             <tr key={employeeId}>
               <td>{employeeId}</td>
