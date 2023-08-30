@@ -26,8 +26,11 @@ function getFirstDayOfMonth(month: number, year: number) {
 const ShiftBoard: React.FC = () => {
   const {
     DAYS_OF_WEEK,
-    now,
     today,
+    selectedMonth,
+    setSelectedMonth,
+    selectedYear,
+    setSelectedYear,
     showShiftBar,
     setShowShiftBar,
     selectedDays,
@@ -45,8 +48,6 @@ const ShiftBoard: React.FC = () => {
     handleDeleteShift,
   } = useDays();
 
-  const [selectedMonth, setSelectedMonth] = useState(now.getMonth());
-  const [selectedYear, setSelectedYear] = useState(now.getFullYear());
   const [calendarData, setCalendarData] = useState<(number | null)[]>([]);
   const [holidays, setHolidays] = useState<{ [date: string]: string }>({});
 
